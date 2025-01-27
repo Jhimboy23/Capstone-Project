@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+
+<nav class="sidebar navbar-dark bg-black d-flex flex-column">
+    <div class="container-fluid">
+        <div class="navbar-collapse" id="navbar">
+            <ul class="navbar-nav flex-column mb-auto">
+                <li class="nav-item {% if request.path == '/' %}active{% endif %}">
+                    <a class="nav-link" id="home" href="/"><i class="fas fa-home"></i> Home</a>
+                </li>
+                <div class="nav-divider"></div>
+                <li class="nav-item {% if request.path == '/controlPanel' %}active{% endif %}">
+                    <a class="nav-link" id="controlPanel" href="/controlPanel"><i class="fas fa-tachometer-alt"></i> Control Panel</a>
+                </li>
+                <div class="nav-divider"></div>
+                <li class="nav-item {% if request.path == '/settings' %}active{% endif %}">
+                    <a class="nav-link" id="settings" href="/settings"><i class="fas fa-cog"></i> Settings</a>
+                </li>
+                <div class="nav-divider"></div>
+                <li class="nav-item {% if request.path == '/logout' %}active{% endif %}">
+                    <a class="nav-link" id="logout" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <div class="white-box p-4 shadow-sm" style="border-radius: 25px; max-width: 139%; margin-left: -7%; position: relative;">
+                <i class="fas fa-bell notification-icon mt-2 mr-3" style="position: absolute; top: 20px; right: 20px; font-size: 33px; color: black;"></i>
+                <form method="POST">
+                    <div class="form-group mb-3" style="margin-top: 25%">
+                        <label for="email"><strong>Email</strong></label>
+                        <input type="email" name="email" id="email" class="form-control" value="{{ user.email }}" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="firstName"><strong>First Name</strong></label>
+                        <input type="text" name="firstName" id="firstName" class="form-control" value="{{ user.first_name }}" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="password1"><strong>New Password</strong></label>
+                        <input type="password" name="password1" id="password1" class="form-control" placeholder="Enter Password">
+                    </div>
+                    <div class="form-group mb-4">
+                        <label for="password2"><strong>Confirm New Password</strong></label>
+                        <input type="password" name="password2" id="password2" class="form-control" placeholder="Confirm Password">
+                    </div>
+                    <div class="login-button">
+                        <button type="submit" style="margin-bottom: 15px; border-radius: 20px; width: 60%;">Update</button>
+                    </div>               
+                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

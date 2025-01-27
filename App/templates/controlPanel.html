@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}ControlPanel{% endblock %}
+
+{% block content %}
+
+<nav class="sidebar navbar-dark bg-black d-flex flex-column">
+    <div class="container-fluid">
+        <div class="navbar-collapse" id="navbar">
+            <ul class="navbar-nav flex-column mb-auto">
+                <li class="nav-item {% if request.path == '/' %}active{% endif %}" style="margin-left: 4px;">
+                    <a class="nav-link" id="home" href="/"><i class="fas fa-home" style="margin-right: 4px;"></i> Home</a>
+                </li>
+                <div class="nav-divider"></div>
+                <li class="nav-item {% if request.path == '/controlPanel' %}active{% endif %}" style="margin-left: 4px;">
+                    <a class="nav-link" id="controlPanel" href="/controlPanel"><i class="fas fa-tachometer-alt" style="margin-right: 4px;"></i> Control Panel</a>
+                </li>
+                <div class="nav-divider"></div>
+                <li class="nav-item {% if request.path == '/settings' %}active{% endif %}" style="margin-left: 4px;">
+                    <a class="nav-link" id="settings" href="/settings"><i class="fas fa-cog" style="margin-right: 4px;"></i> Settings</a>
+                </li>
+                <div class="nav-divider"></div>          
+                <li class="nav-item {% if request.path == '/logout' %}active{% endif %}" style="margin-left: 4px;">
+                    <a class="nav-link" id="logout" href="/logout"><i class="fas fa-sign-out-alt" style="margin-right: 4px;"></i> Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+    
+    <div class="container">
+        <div class="white-box" style="height: 88%; width: 94%; margin-right: -5%; margin-left: 12%; position: relative;">
+            <i class="fas fa-bell notification-icon" style="position: absolute; top: 5px; right: 5%; font-size: 33px; margin-top: 4%; color: blue;"></i></div>
+
+
+            
+    </div>
+
+{% endblock %}

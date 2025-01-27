@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<nav class="sidebar navbar-dark bg-black d-flex flex-column">
+    <div class="container-fluid">
+        <div class="navbar-collapse" id="navbar">
+            <ul class="navbar-nav flex-column mb-auto">
+                <li class="nav-item {% if request.path == '/' %}active{% endif %}">
+                    <a class="nav-link" id="home" href="/"><i class="fas fa-home" style="margin-right: 4px;"></i> Home</a>
+                </li>
+                <div class="nav-divider"></div>
+                <li class="nav-item {% if request.path == '/controlPanel' %}active{% endif %}">
+                    <a class="nav-link" id="controlPanel" href="/controlPanel"><i class="fas fa-tachometer-alt" style="margin-right: 4px;"></i> Control Panel</a>
+                </li>
+                <div class="nav-divider"></div>
+                <li class="nav-item {% if request.path == '/settings' %}active{% endif %}">
+                    <a class="nav-link" id="settings" href="/settings"><i class="fas fa-cog" style="margin-right: 4px;"></i> Settings</a>
+                </li>
+                <div class="nav-divider"></div>
+                <li class="nav-item {% if request.path == '/logout' %}active{% endif %}">
+                    <a class="nav-link" id="logout" href="/logout"><i class="fas fa-sign-out-alt" style="margin-right: 4px;"></i> Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="white-box" style="height: 150%; width: 94%; margin-right: -5%; margin-left: 12%; position: relative; padding: 20px; margin-top: 35%;">
+        <!-- Keep the h3 element in its original position -->
+        <h3 class="mt-2 ml-3;">Hello, {{ user.first_name }}</h3>
+        <i class="fas fa-bell notification-icon mt-2 mr-3" style="position: absolute; top: 20px; right: 20px; font-size: 33px; color: black;"></i>
+    
+        <!-- Add more space before the distance section -->
+        <div style="text-align: center; margin-top: 25%; margin-left: -12%;">
+            <!-- Ensure distance and status are displayed only once -->
+            <p id="distance-status" style="font-size: 18px;">
+                Current Distance: <span id="distance">{{ distance }}</span> cm<br>
+                Status: <span id="status" class="{{ status }}" style="text-transform: capitalize;">{{ status | capitalize }}</span>
+            </p>
+        </div>
+        <!-- Plotly graph section -->
+        <div id="distance-graph" style="
+            margin-top: 8%; 
+            width: 59%; 
+            height: 50%; 
+            margin-left: auto; 
+            margin-right: 3%; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            background: #fff;
+            ">
+        </div>
+        
+    </div>
+</div>
+
+<!-- Include Plotly.js -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+    // Initial empty data for the graph
+    var data = [{
+        x: [], // Time stamps
+        y: [], // Distance values
+        mode: 'lines',
+        name: 'Distance (cm)',
+        line: {
+            color: 'blue',
+            width: 2
+        }
+    }];
+
+    var layout = {
+        title: 'Live Distance Monitoring',
+        xaxis: {
+            title: 'Time',
+            type: 'date',
+            tickformat: '%H:%M:%S', // Format to display time in hours, minutes, and seconds
+            range: [] // Will be set dynamically
+        },
+        yaxis: {
+            title: 'Distance (cm)',
+            range: [0, 500] // Adjust based on your expected distance range
+        },
+        margin: {
+            t: 50, // Top margin
+            b: 40, // Bottom margin
+            l: 50, // Left margin
+            r: 10 // Right margin
+        },
+        dragmode: false,  // Disable zooming and panning
+        staticPlot: false,  // Keep the plot interactive but without zoom/pan
+    };
+
+    Plotly.newPlot('distance-graph', data, layout);
+
+    const UPDATE_INTERVAL = 5000; // 5 seconds
+    const DISPLAY_TIME = 20000; // Display last 20 seconds of data (rolling window)
+
+    function fetchDistanceData() {
+        return fetch('/distance')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            });
+    }
+
+    function updateGraph(distance, status) {
+        const now = new Date(); // Current date and time
+
+        // Set line color based on status
+        let color = 'blue';
+        if (status === 'high') {
+            color = 'green';
+        } else if (status === 'medium') {
+            color = 'orange';
+        } else if (status === 'low') {
+            color = 'red';
+        }
+
+        // Update the line color
+        Plotly.restyle('distance-graph', {
+            'line.color': color
+        }, [0]);
+
+        // Add new data point
+        Plotly.extendTraces('distance-graph', {
+            x: [[now]],
+            y: [[distance]]
+        }, [0]);
+
+        // Keep only the data points within the DISPLAY_TIME window
+        const x = document.getElementById('distance-graph').data[0].x;
+        const cutoffTime = new Date(now - DISPLAY_TIME);
+
+        const newX = x.filter(time => new Date(time) >= cutoffTime);
+
+        Plotly.relayout('distance-graph', {
+            'xaxis.range': [newX[0], now] // Update the x-axis range
+        });
+    }
+
+    function handleUpdate() {
+        fetchDistanceData()
+            .then(data => {
+                if (!data.error) {
+                    // Update the graph with the new data
+                    updateGraph(parseFloat(data.distance), data.status);
+                    
+                    // Update the distance and status text in real-time
+                    document.getElementById('distance').innerText = parseFloat(data.distance).toFixed(2);
+                    document.getElementById('status').innerText = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+                } else {
+                    console.error('Error in data:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching distance data:', error);
+            })
+            .finally(() => {
+                setTimeout(handleUpdate, UPDATE_INTERVAL); // Schedule next update
+            });
+    }
+
+    // Start the update cycle
+    handleUpdate(); // Initial call to start the cycle
+</script>
+
+{% endblock %}
