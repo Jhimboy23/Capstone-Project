@@ -1,172 +1,430 @@
+
 {% extends "base.html" %}
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<nav class="sidebar navbar-dark bg-black d-flex flex-column">
-    <div class="container-fluid">
-        <div class="navbar-collapse" id="navbar">
-            <ul class="navbar-nav flex-column mb-auto">
-                <li class="nav-item {% if request.path == '/' %}active{% endif %}">
-                    <a class="nav-link" id="home" href="/"><i class="fas fa-home" style="margin-right: 4px;"></i> Home</a>
-                </li>
-                <div class="nav-divider"></div>
-                <li class="nav-item {% if request.path == '/controlPanel' %}active{% endif %}">
-                    <a class="nav-link" id="controlPanel" href="/controlPanel"><i class="fas fa-tachometer-alt" style="margin-right: 4px;"></i> Control Panel</a>
-                </li>
-                <div class="nav-divider"></div>
-                <li class="nav-item {% if request.path == '/settings' %}active{% endif %}">
-                    <a class="nav-link" id="settings" href="/settings"><i class="fas fa-cog" style="margin-right: 4px;"></i> Settings</a>
-                </li>
-                <div class="nav-divider"></div>
-                <li class="nav-item {% if request.path == '/logout' %}active{% endif %}">
-                    <a class="nav-link" id="logout" href="/logout"><i class="fas fa-sign-out-alt" style="margin-right: 4px;"></i> Logout</a>
-                </li>
-            </ul>
+ <!-- Sidebar content -->
+    <div class="flex h-auto">
+      <div id="sidebar"
+    class="w-[75px] sm:w-56 bg-[#4C4B16] text-white h-screen transition-all duration-300 ease-in-out">
+    <div class="p-5">
+        <div class="bg-white rounded-lg w-36 h-28 hidden sm:block mx-auto">
+            <!-- Show image in place of sidebar title -->
+            <img src="/static/ASIA.png" alt="Sidebar Image"
+                class="hidden sm:block w-32 h-28 mx-auto mt-[10px] px-1 pt-3">
         </div>
     </div>
-</nav>
+    <ul class="space-y-4 px-5">
+        <!-- For small screens, show only icons -->
+        <li class="block sm:hidden"><a href="/"
+                class="block py-2 px-1 text-center text-xl hover:bg-black transition-all">
+                <i class="fas fa-home"></i>
+            </a></li>
+        <li class="block sm:hidden"><a href="/forecasting"
+                class="block py-2 px-1 text-center text-xl hover:bg-black transition-all">
+                <i class="fas fa-info-circle"></i>
+            </a></li>
+        <li class="block sm:hidden"><a href="/controlPanel"
+                class="block py-2 px-1 text-center text-xl hover:bg-black transition-all">
+                <i class="fas fa-history"></i>
+            </a></li>
+        <li class="block sm:hidden"><a href="/settings"
+                class="block py-2 px-1 text-center text-xl hover:bg-black transition-all">
+                <i class="fas fa-cogs"></i>
+            </a></li>
+
+        <!-- For larger screens, show both text and icons -->
+        <li class="hidden sm:flex items-center hover:bg-black rounded transition-all">
+            <a href="/" class="flex py-2 px-4 w-full mx-auto">
+                <i class="fas fa-home mr-3"></i>
+                <span class="hidden sm:block">Home</span>
+            </a>
+        </li>
+        <li class="hidden sm:flex items-center hover:bg-black rounded transition-all">
+            <a href="/forecasting" class="flex py-2 px-4 w-full mx-auto">
+                <i class="fas fa-chart-line mr-3"></i>
+                <span class="hidden sm:block">Prediction</span>
+            </a>
+        </li>
+        <li class="hidden sm:flex items-center hover:bg-black rounded transition-all">
+            <a href="/controlPanel" class="flex py-2 px-4 w-full mx-auto">
+                <i class="fas fa-history mr-3"></i>
+                <span class="hidden sm:block">History</span>
+            </a>
+        </li>
+<!-- Settings with Increased Bottom Margin -->
+<li class="hidden sm:flex items-center hover:bg-black rounded transition-all">
+    <a href="/settings" class="flex py-2 px-4 w-full mx-auto">
+        <i class="fas fa-cogs mr-3"></i>
+        <span class="hidden sm:block">Settings</span>
+    </a>
+</li>
+
+<!-- Logout Button for Small Screens -->
+<li class="block sm:hidden mt-10">
+    <a href="/logout" class="block py-2 px-1 text-center text-xl hover:bg-red-700 bg-red-600 rounded transition-all">
+        <i class="fas fa-sign-out-alt"></i>
+    </a>
+</li>
+
+<!-- Logout Button for Larger Screens -->
+<li
+    class="hidden sm:flex items-center bg-gradient-to-r from-red-500 to-red-700 hover:from-red-600 hover:to-red-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 ease-in-out">
+    <a href="/logout" class="flex items-center py-3 px-5 w-full text-white font-semibold tracking-wide">
+        <i class="fas fa-sign-out-alt mr-4 text-lg"></i>
+        <span class="hidden sm:block">Logout</span>
+    </a>
+</li>
+    </ul>
+</div>
 
 <div class="container">
-    <div class="white-box" style="height: 150%; width: 94%; margin-right: -5%; margin-left: 12%; position: relative; padding: 20px; margin-top: 35%;">
-        <!-- Keep the h3 element in its original position -->
-        <h3 class="mt-2 ml-3;">Hello, {{ user.first_name }}</h3>
-        <i class="fas fa-bell notification-icon mt-2 mr-3" style="position: absolute; top: 20px; right: 20px; font-size: 33px; color: black;"></i>
-    
-        <!-- Add more space before the distance section -->
-        <div style="text-align: center; margin-top: 25%; margin-left: -12%;">
-            <!-- Ensure distance and status are displayed only once -->
-            <p id="distance-status" style="font-size: 18px;">
-                Current Distance: <span id="distance">{{ distance }}</span> cm<br>
-                Status: <span id="status" class="{{ status }}" style="text-transform: capitalize;">{{ status | capitalize }}</span>
-            </p>
-        </div>
-        <!-- Plotly graph section -->
-        <div id="distance-graph" style="
-            margin-top: 8%; 
-            width: 59%; 
-            height: 50%; 
-            margin-left: auto; 
-            margin-right: 3%; 
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
-            background: #fff;
-            ">
-        </div>
-        
+<!-- Main content -->
+<div id="main-content"
+    class="flex-1 p-3 md:p-4 lg:p-5 page-transition overflow-y-auto h-screen page-transition-hidden transition-all duration-500 ease-in-out">
+        <h2 class="text-xl md:text-2xl lg:text-3xl font-bold mb-6">Hi {{ user.first_name }}<span class="wave">👋</span></h2>
+
+<!-- Responsive Cards Row -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3 lg:gap-4">
+    <!-- Today's Status Card -->
+    <div
+        class="bg-white rounded-lg lg:rounded-xl shadow-sm lg:shadow-md p-3 md:p-4 lg:p-5 text-center transition-transform transform hover:scale-105">
+        <h3 class="text-base md:text-lg lg:text-xl font-semibold text-gray-700 mb-1 md:mb-2 lg:mb-3">Today Status
+            Average</h3>
+        <p class="text-xl md:text-2xl lg:text-3xl font-bold text-[#4C4B16]">{{ averages.today if averages.today is not none else 'No Data' }}%</p>
     </div>
+
+    <!-- Last Week's Status Card -->
+    <div
+        class="bg-white rounded-lg lg:rounded-xl shadow-sm lg:shadow-md p-3 md:p-4 lg:p-5 text-center transition-transform transform hover:scale-105">
+        <h3 class="text-base md:text-lg lg:text-xl font-semibold text-gray-700 mb-1 md:mb-2 lg:mb-3">Last Week
+            Status
+            Average</h3>
+        <p class="text-xl md:text-2xl lg:text-3xl font-bold text-[#4C4B16]">{{ averages.week if averages.week is not none else 'No Data' }}%</p>
+    </div>
+
+    <!-- Last Month's Status Card -->
+    <div
+        class="bg-white rounded-lg lg:rounded-xl shadow-sm lg:shadow-md p-3 md:p-4 lg:p-5 text-center transition-transform transform hover:scale-105">
+        <h3 class="text-base md:text-lg lg:text-xl font-semibold text-gray-700 mb-1 md:mb-2 lg:mb-3">Last Month
+            Status
+            Average</h3>
+        <p class="text-xl md:text-2xl lg:text-3xl font-bold text-[#4C4B16]">{{ averages.month if averages.month is not none else 'No Data' }}%</p>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4 mt-[25px]">
+    <!-- Fuel Supply Card -->
+    <div
+        class="bg-white rounded-lg lg:h-[13rem] lg:rounded-xl shadow-sm lg:shadow-md p-3 md:p-4 lg:p-5 transition-transform transform hover:scale-105">
+        <p class="text-xl md:text-2xl lg:text-2xl font-bold text-[#4C4B16] mb-2 text-left">
+            Remaining Fuel: <span id="remainingFuel">{{ remainingFuel }}</span>cm
+        </p>
+        <p class="text-sm md:text-base lg:text-lg text-gray-600 mb-1 text-left">Empty Space: <span id="distance"
+                class="font-medium text-black">{{ distance }}</span>cm
+        </p>
+        <p class="text-sm md:text-base lg:text-lg text-gray-600 mb-1 text-left">Liter Conversion: <span id="liters"
+                class="font-medium text-black">{{ liters }}</span> out of <span class="font-medium text-black">2081(L)</span>
+        </p>
+            <p class="text-sm md:text-base lg:text-lg text-gray-500 font-semibold text-left">
+                Status: <span id="status">{{ status }}</span>
+            </p>
+    <p class="text-sm md:text-base lg:text-lg font-semibold text-left" style="display: none;">
+        Percentage: <span id="percentage">{{ percentage }}</span>%
+    </p>
+
+    </div>
+
+
+    <!-- Sensor Data Graph -->
+    <div
+        class="bg-white rounded-lg lg:rounded-xl shadow-sm lg:shadow-md p-3 md:p-4 lg:p-5 hover:shadow-lg hover:bg-gray-50 lg:col-span-2">
+        <!-- Line Graph Placeholder -->
+        <div id="distance-graph" class="w-full h-48 md:h-60 lg:h-96 mb-2 transition-transform transform hover:scale-105">
+            <!-- The line graph will be rendered here -->
+        </div>
+    </div>
+</div>
+      
+<div class="flex flex-wrap items-center gap-2 ml-2 mt-4">
+    <button class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 w-full md:w-auto"
+        onclick="fetchData('today')">
+        Today
+    </button>
+    <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-full md:w-auto"
+        onclick="fetchData('week')">
+        Last 7 Days
+    </button>
+    <button class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 w-full md:w-auto"
+        onclick="fetchData('month')">
+        Last Month
+    </button>
+
+    <input type="date" id="start_date"
+        class="border border-gray-300 rounded-md px-3 py-2 w-full md:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500">
+    <input type="date" id="end_date"
+        class="border border-gray-300 rounded-md px-3 py-2 w-full md:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500">
+    <button class="bg-cyan-500 text-white px-4 py-2 rounded-md hover:bg-cyan-600 w-full md:w-auto"
+        onclick="fetchData('custom')">
+        Custom Range
+    </button>
+</div>
+
+<div id="chart" class="mt-4 w-full h-[400px]"></div> <!-- Placeholder for Plotly graph -->
+
+</div>
+</div>
 </div>
 
 <!-- Include Plotly.js -->
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-<script>
-    // Initial empty data for the graph
-    var data = [{
-        x: [], // Time stamps
-        y: [], // Distance values
-        mode: 'lines',
-        name: 'Distance (cm)',
-        line: {
-            color: 'blue',
-            width: 2
-        }
-    }];
 
-    var layout = {
-        title: 'Live Distance Monitoring',
-        xaxis: {
-            title: 'Time',
-            type: 'date',
-            tickformat: '%H:%M:%S', // Format to display time in hours, minutes, and seconds
-            range: [] // Will be set dynamically
+<script>
+   let traceData = {
+        x: [],
+        y: [],
+        mode: 'lines',
+        name: 'Remaining Fuel (Liters)',
+        line: {
+            color: 'royalblue',
+            width: 3,
+            shape: 'spline'
         },
-        yaxis: {
-            title: 'Distance (cm)',
-            range: [0, 500] // Adjust based on your expected distance range
-        },
-        margin: {
-            t: 50, // Top margin
-            b: 40, // Bottom margin
-            l: 50, // Left margin
-            r: 10 // Right margin
-        },
-        dragmode: false,  // Disable zooming and panning
-        staticPlot: false,  // Keep the plot interactive but without zoom/pan
+        fill: 'tozeroy',
+        fillcolor: 'rgba(135, 206, 250, 0.3)'
     };
 
-    Plotly.newPlot('distance-graph', data, layout);
-
-    const UPDATE_INTERVAL = 5000; // 5 seconds
-    const DISPLAY_TIME = 20000; // Display last 20 seconds of data (rolling window)
-
-    function fetchDistanceData() {
-        return fetch('/distance')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
+     // Layout for the graph, including a closer dedicated space for the legend
+        var layout = {
+            grid: { rows: 1, columns: 2, pattern: 'independent' }, // Two columns
+            title: 'Fuel Level Monitoring',
+            xaxis: {
+                title: 'Time',
+                type: 'date',
+                tickformat: '%H:%M:%S',
+                domain: [0, 0.85] // Graph occupies 85% of width
+            },
+            yaxis: {
+                title: 'Fuel Level (%)',
+                range: [0, 100]
+            },
+            margin: { t: 50, b: 60, l: 50, r: 20 }, // Adjusted right margin
+            annotations: [
+                {
+                    x: 0.94, // Position the legend closer to the graph
+                    y: 0.95,
+                    xref: 'paper',
+                    yref: 'paper',
+                    text: '<span style="color: green;">&#9632;</span> High',
+                    showarrow: false,
+                    font: { size: 14 }
+                },
+                {
+                    x: 0.99, // Align with the first annotation
+                    y: 0.85,
+                    xref: 'paper',
+                    yref: 'paper',
+                    text: '<span style="color: orange;">&#9632;</span> Moderate',
+                    showarrow: false,
+                    font: { size: 14 }
+                },
+                {
+                    x: 0.94, // Align with the other annotations
+                    y: 0.75,
+                    xref: 'paper',
+                    yref: 'paper',
+                    text: '<span style="color: red;">&#9632;</span> Low',
+                    showarrow: false,
+                    font: { size: 14 }
                 }
-                return response.json();
-            });
-    }
+            ]
+        };
 
-    function updateGraph(distance, status) {
-        const now = new Date(); // Current date and time
+    // Initialize graph
+    Plotly.newPlot('distance-graph', [traceData], layout, { responsive: true });
 
-        // Set line color based on status
-        let color = 'blue';
-        if (status === 'high') {
-            color = 'green';
-        } else if (status === 'medium') {
-            color = 'orange';
-        } else if (status === 'low') {
-            color = 'red';
-        }
-
-        // Update the line color
-        Plotly.restyle('distance-graph', {
-            'line.color': color
-        }, [0]);
-
-        // Add new data point
-        Plotly.extendTraces('distance-graph', {
-            x: [[now]],
-            y: [[distance]]
-        }, [0]);
-
-        // Keep only the data points within the DISPLAY_TIME window
-        const x = document.getElementById('distance-graph').data[0].x;
-        const cutoffTime = new Date(now - DISPLAY_TIME);
-
-        const newX = x.filter(time => new Date(time) >= cutoffTime);
-
+    window.onresize = function () {
         Plotly.relayout('distance-graph', {
-            'xaxis.range': [newX[0], now] // Update the x-axis range
+            width: document.getElementById('distance-graph').clientWidth,
+            height: document.getElementById('distance-graph').clientHeight
         });
+    };
+
+    // Fetch latest data
+    function fetchLatestData() {
+        fetch('/distance')
+            .then(response => response.json())
+            .then(data => {
+                console.log("Fetched Data:", data);  // Debugging log
+
+                if (data.readings && data.readings.length > 0) {
+                    const latestReading = data.readings[0];
+
+                    // Ensure values exist before updating
+                    if (!latestReading.remainingFuel || !latestReading.liters) {
+                        console.error("Missing data in response:", latestReading);
+                        return;
+                    }
+
+                    // Update displayed values
+                    document.getElementById('percentage').innerText = latestReading.percentage || 'N/A';
+                    document.getElementById('status').innerText = latestReading.status || 'N/A';
+                    document.getElementById('distance').innerText = latestReading.distance || 'N/A';
+                    document.getElementById('liters').innerText = latestReading.liters || 'N/A';
+                    document.getElementById('remainingFuel').innerText = latestReading.remainingFuel || 'N/A';
+
+                    // Graph color based on status
+                    const color = latestReading.status === 'high' ? 'green' :
+                        latestReading.status === 'moderate' ? 'orange' : 'red';
+
+                    Plotly.restyle('distance-graph', { 'line.color': color }, [0]);
+
+                    // Append new data point
+                    const now = new Date();
+                    traceData.x.push(now.toISOString());
+                    traceData.y.push(parseFloat(latestReading.remainingFuel));
+
+                    // Keep only the last 10 seconds of data
+                    if (traceData.x.length > 10) {
+                        traceData.x.shift();
+                        traceData.y.shift();
+                    }
+
+                    // Update graph
+                    Plotly.update('distance-graph', {
+                        x: [traceData.x],
+                        y: [traceData.y]
+                    });
+
+                    // Adjust x-axis range
+                    const pastTime = new Date(now.getTime() - 10000).toISOString();
+                    Plotly.relayout('distance-graph', {
+                        'xaxis.range': [pastTime, now.toISOString()]
+                    });
+                }
+            })
+            .catch(error => console.error('Error fetching data:', error));
     }
 
-    function handleUpdate() {
-        fetchDistanceData()
+    // Fetch data every 5 seconds
+    setInterval(fetchLatestData, 5000);
+    fetchLatestData();
+
+
+
+    // Function to set the color of the status based on its value
+    function setStatusColor(status) {
+        let statusElement = document.getElementById("status");
+
+        if (status === "low") {
+            statusElement.style.color = 'red';
+        } else if (status === "moderate") {
+            statusElement.style.color = 'orange';
+        } else if (status === "high") {
+            statusElement.style.color = 'green';
+        }
+    }
+
+ // Function to set the color of the status based on its value
+    function setStatusColor(status) {
+        let statusElement = document.getElementById("status");
+
+        if (status === "low") {
+            statusElement.style.color = 'red';
+        } else if (status === "moderate") {
+            statusElement.style.color = 'orange';
+        } else if (status === "high") {
+            statusElement.style.color = 'green';
+        }
+    }
+
+    // Function to fetch the latest status and remaining fuel
+    function fetchLatestStatus() {
+        fetch("/status")  // Make a GET request to the /status route
+            .then(response => response.json())  // Parse the JSON response
             .then(data => {
-                if (!data.error) {
-                    // Update the graph with the new data
-                    updateGraph(parseFloat(data.distance), data.status);
-                    
-                    // Update the distance and status text in real-time
-                    document.getElementById('distance').innerText = parseFloat(data.distance).toFixed(2);
-                    document.getElementById('status').innerText = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+                // Update the status text and color
+                const remainingFuelElement = document.getElementById("remainingFuel");
+                const statusElement = document.getElementById("status");
+
+                // If there's no data, show a default message
+                if (data.remainingFuel === null || data.status === null) {
+                    remainingFuelElement.textContent = "No data available";
+                    statusElement.textContent = "No data";
+                    statusElement.style.color = 'gray';
                 } else {
-                    console.error('Error in data:', data.error);
+                    remainingFuelElement.textContent = data.remainingFuel;
+                    statusElement.textContent = data.status;
+
+                    // Update the color based on the status
+                    setStatusColor(data.status);
                 }
             })
             .catch(error => {
-                console.error('Error fetching distance data:', error);
-            })
-            .finally(() => {
-                setTimeout(handleUpdate, UPDATE_INTERVAL); // Schedule next update
+                console.error("Error fetching status:", error);
             });
     }
 
-    // Start the update cycle
-    handleUpdate(); // Initial call to start the cycle
-</script>
+    // Fetch status initially when the page loads
+    fetchLatestStatus();
 
+    // Set an interval to update the status every 5 seconds (5000 ms)
+    setInterval(fetchLatestStatus, 5000);  // Adjust this interval as needed
+
+
+     function fetchData(range) {
+            let url = `/get_percentage_data?range=${range}`;
+            if (range === "custom") {
+                const startDate = document.getElementById("start_date").value;
+                const endDate = document.getElementById("end_date").value;
+                if (!startDate || !endDate) {
+                    alert("Please select a valid date range.");
+                    return;
+                }
+                url += `&start_date=${startDate}&end_date=${endDate}`;
+            }
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data || data.length === 0) {
+                        alert("No data available for the selected range.");
+                        return;
+                    }
+                    updateGraph(data);
+                })
+                .catch(error => console.error("Error fetching data:", error));
+        }
+
+        function updateGraph(data) {
+            data.sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
+
+            const indices = data.map((_, i) => (i + 1) * 0.5);
+            const remainingFuels = data.map(d => parseFloat(d.remainingFuel));
+            const datetimes = data.map(d => d.datetime);
+
+            const trace = {
+                x: indices,
+                y: remainingFuels,
+                type: "scatter",
+                mode: "lines+markers",
+                line: { shape: "spline", color: "blue", width: 2 },
+                fill: "tozeroy",
+                fillcolor: "rgba(0, 0, 255, 0.2)",
+                hovertemplate: "Remaining Fuel: %{y}cm<br>Datetime: %{text}<extra></extra>",
+                text: datetimes
+            };
+
+            const layout = {
+                title: "Remaining Fuel Over Time",
+                xaxis: { title: "Reading Index", tickmode: "array", tickvals: indices, ticktext: indices.map(x => x.toFixed(1)), automargin: true },
+                yaxis: { title: "Remaining Fuel (cm)", range: [0, 100], tickvals: [0, 20, 40, 60, 80, 100] }
+            };
+
+            Plotly.newPlot("chart", [trace], layout, { responsive: true });
+        }
+
+        fetchData("today");
+        
+</script>
 {% endblock %}

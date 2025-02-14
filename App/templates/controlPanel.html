@@ -1,39 +1,232 @@
+<style>
+    /* Custom transition for smooth page load */
+    .page-transition {
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    }
+
+    /* Initial state (hidden and slightly shifted) */
+    .page-transition-hidden {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    /* Final state (visible and at normal position) */
+    .page-transition-visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in {
+        animation: fade-in 0.6s ease-out both;
+    }
+
+    .animate-fade-in-up {
+        animation: fade-in 0.8s ease-out both;
+    }
+
+    .delay-100 {
+        animation-delay: 0.1s;
+    }
+
+    .delay-200 {
+        animation-delay: 0.2s;
+    }
+
+    .delay-300 {
+        animation-delay: 0.3s;
+    }
+
+    .delay-400 {
+        animation-delay: 0.4s;
+    }
+
+    .delay-500 {
+        animation-delay: 0.5s;
+    }
+</style>
+
 {% extends "base.html" %}
-{% block title %}ControlPanel{% endblock %}
+{% block title %}Control Panel{% endblock %}
 
 {% block content %}
-
-<nav class="sidebar navbar-dark bg-black d-flex flex-column">
-    <div class="container-fluid">
-        <div class="navbar-collapse" id="navbar">
-            <ul class="navbar-nav flex-column mb-auto">
-                <li class="nav-item {% if request.path == '/' %}active{% endif %}" style="margin-left: 4px;">
-                    <a class="nav-link" id="home" href="/"><i class="fas fa-home" style="margin-right: 4px;"></i> Home</a>
-                </li>
-                <div class="nav-divider"></div>
-                <li class="nav-item {% if request.path == '/controlPanel' %}active{% endif %}" style="margin-left: 4px;">
-                    <a class="nav-link" id="controlPanel" href="/controlPanel"><i class="fas fa-tachometer-alt" style="margin-right: 4px;"></i> Control Panel</a>
-                </li>
-                <div class="nav-divider"></div>
-                <li class="nav-item {% if request.path == '/settings' %}active{% endif %}" style="margin-left: 4px;">
-                    <a class="nav-link" id="settings" href="/settings"><i class="fas fa-cog" style="margin-right: 4px;"></i> Settings</a>
-                </li>
-                <div class="nav-divider"></div>          
-                <li class="nav-item {% if request.path == '/logout' %}active{% endif %}" style="margin-left: 4px;">
-                    <a class="nav-link" id="logout" href="/logout"><i class="fas fa-sign-out-alt" style="margin-right: 4px;"></i> Logout</a>
-                </li>
-            </ul>
+<!-- Sidebar -->
+<div class="flex">
+    <!-- Sidebar content -->
+    <div id="sidebar" class="w-[75px] sm:w-56 bg-[#4C4B16] text-white h-screen transition-all duration-300 ease-in-out">
+        <div class="p-5">
+            <div class="bg-white rounded-lg w-36 h-28 hidden sm:block mx-auto">
+                <!-- Show image in place of sidebar title -->
+                <img src="/static/ASIA.png" alt="Sidebar Image"
+                    class="hidden sm:block w-32 h-28 mx-auto mt-[10px] px-1 pt-3">
+            </div>
         </div>
+        <ul class="space-y-4 px-5">
+            <!-- For small screens, show only icons -->
+            <li class="block sm:hidden"><a href="/"
+                    class="block py-2 px-1 text-center text-xl hover:bg-black transition-all">
+                    <i class="fas fa-home"></i>
+                </a></li>
+            <li class="block sm:hidden"><a href="/forecasting"
+                    class="block py-2 px-1 text-center text-xl hover:bg-black transition-all">
+                    <i class="fas fa-info-circle"></i>
+                </a></li>
+            <li class="block sm:hidden"><a href="/controlPanel"
+                    class="block py-2 px-1 text-center text-xl hover:bg-black transition-all">
+                    <i class="fas fa-history"></i>
+                </a></li>
+            <li class="block sm:hidden"><a href="/settings"
+                    class="block py-2 px-1 text-center text-xl hover:bg-black transition-all">
+                    <i class="fas fa-cogs"></i>
+                </a></li>
+
+            <!-- For larger screens, show both text and icons -->
+            <li class="hidden sm:flex items-center hover:bg-black rounded transition-all">
+                <a href="/" class="flex py-2 px-4 w-full mx-auto">
+                    <i class="fas fa-home mr-3"></i>
+                    <span class="hidden sm:block">Home</span>
+                </a>
+            </li>
+            <li class="hidden sm:flex items-center hover:bg-black rounded transition-all">
+                <a href="/forecasting" class="flex py-2 px-4 w-full mx-auto">
+                    <i class="fas fa-chart-line mr-3"></i>
+                    <span class="hidden sm:block">Prediction</span>
+                </a>
+            </li>
+            <li class="hidden sm:flex items-center hover:bg-black rounded transition-all">
+                <a href="/controlPanel" class="flex py-2 px-4 w-full mx-auto">
+                    <i class="fas fa-history mr-3"></i>
+                    <span class="hidden sm:block">History</span>
+                </a>
+            </li>
+            <!-- Settings with Increased Bottom Margin -->
+            <li class="hidden sm:flex items-center hover:bg-black rounded transition-all">
+                <a href="/settings" class="flex py-2 px-4 w-full mx-auto">
+                    <i class="fas fa-cogs mr-3"></i>
+                    <span class="hidden sm:block">Settings</span>
+                </a>
+            </li>
+
+            <!-- Logout Button for Small Screens -->
+            <li class="block sm:hidden mt-10">
+                <a href="/logout"
+                    class="block py-2 px-1 text-center text-xl hover:bg-red-700 bg-red-600 rounded transition-all">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </li>
+
+            <!-- Logout Button for Larger Screens -->
+            <li
+                class="hidden sm:flex items-center bg-gradient-to-r from-red-500 to-red-700 hover:from-red-600 hover:to-red-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 ease-in-out">
+                <a href="/logout" class="flex items-center py-3 px-5 w-full text-white font-semibold tracking-wide">
+                    <i class="fas fa-sign-out-alt mr-4 text-lg"></i>
+                    <span class="hidden sm:block">Logout</span>
+                </a>
+            </li>
+        </ul>
     </div>
-</nav>
 
-    
-    <div class="container">
-        <div class="white-box" style="height: 88%; width: 94%; margin-right: -5%; margin-left: 12%; position: relative;">
-            <i class="fas fa-bell notification-icon" style="position: absolute; top: 5px; right: 5%; font-size: 33px; margin-top: 4%; color: blue;"></i></div>
-
-
-            
+<!-- Main content with animation -->
+<div id="main-content" class="flex-1 p-6 page-transition transition-all duration-500 ease-in-out animate-fade-in-up">
+    <!-- Sensor Data Table -->
+    <div class="overflow-x-auto">
+        <table id="readings-table"
+            class="min-w-full bg-white border border-gray-300 rounded-lg shadow-lg animate-fade-in">
+            <thead class="bg-[#4C4B16] text-white">
+                <tr>
+                    <th class="px-4 py-3 text-left text-sm sm:text-base font-semibold">Remaining Fuel (cm)</th>
+                    <th class="px-4 py-3 text-left text-sm sm:text-base font-semibold">Distance (cm)</th>
+                    <th class="px-4 py-3 text-left text-sm sm:text-base font-semibold">Liters</th>
+                    <th class="px-4 py-3 text-left text-sm sm:text-base font-semibold">Datetime</th>
+                </tr>
+            </thead>
+            <tbody id="readings-body" class="divide-y divide-gray-300">
+                {% for reading in readings %}
+                <tr class="border-t border-gray-300 animate-fade-in delay-100 hover:bg-gray-100 transition">
+                    <td class="px-4 py-3 text-center">{{ reading[0] }}</td>
+                    <td class="px-4 py-3 text-center">{{ reading[1] }}</td>
+                    <td class="px-4 py-3 text-center">{{ reading[2] }}</td>
+                    <td class="px-4 py-3 text-center">{{ reading[3] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
+</div>
+
+
+
+</div>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.20.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+  $(document).ready(function () {
+        let firstLoad = true; // Flag to check if it's the first page load
+        let previousData = ""; // Store previous data for comparison
+
+        function fetchData() {
+            $.ajax({
+                url: "{{ url_for('views.get_distance') }}",
+                type: 'GET',
+                success: function (data) {
+                    if (data.readings && Array.isArray(data.readings)) {
+                        let newData = JSON.stringify(data.readings); // Convert readings to string for comparison
+
+                        // Only update the table if data has changed
+                        if (newData !== previousData) {
+                            let readingsTableBody = $('#readings-body');
+                            readingsTableBody.empty(); // Clear table before inserting new data
+
+                            $.each(data.readings, function (index, reading) {
+                                let row = `<tr class="border-t border-gray-300 hover:bg-gray-100 transition ${firstLoad ? 'animate-fade-in delay-' + (index * 100) : ''}">
+                                <td class="px-4 py-3 text-center">${reading.remainingFuel}</td>
+                                <td class="px-4 py-3 text-center">${reading.distance}</td>
+                                <td class="px-4 py-3 text-center">${reading.liters}</td>
+                                <td class="px-4 py-3 text-center">${reading.datetime}</td>
+                            </tr>`;
+
+                                readingsTableBody.append(row);
+                            });
+
+                            // Save current data for future comparison
+                            previousData = newData;
+
+                            // Remove animation class after first load
+                            firstLoad = false;
+                        }
+                    }
+                },
+                error: function (error) {
+                    console.error("Error fetching data:", error);
+                }
+            });
+        }
+
+        // Fetch data automatically on page load
+        fetchData();
+
+        // Automatically fetch only when there's an update
+        function autoFetch() {
+            fetchData();
+            requestAnimationFrame(autoFetch); // Efficient continuous fetching
+        }
+        requestAnimationFrame(autoFetch);
+    });
+
+
+</script>
 
 {% endblock %}

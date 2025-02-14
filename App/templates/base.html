@@ -1,87 +1,398 @@
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-        <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet"> <!-- Custom CSS -->
-        <script src="https://kit.fontawesome.com/e3ea81419c.js" crossorigin="anonymous"></script>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <title>{% block title %}Home{% endblock %}</title>
-        <style>
-            body {
-                background-image: url("{{ url_for('static', filename='woodenplank.png') }}");
-                background-size: cover;
-                background-repeat: no-repeat;
-                background-attachment: fixed;
-                height: 100vh;
-                margin: 0;
-                padding: 0;
-                font-family: 'Roboto', sans-serif;
-                }
-        </style>
-    </head>
-    <body>
+<!DOCTYPE html>
+<html>
 
-        <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
-            <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-            </symbol>
-            <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
-            </symbol>
-            <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
-            </symbol>
-          </svg>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://kit.fontawesome.com/e3ea81419c.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>{% block title %}Home{% endblock %}</title>
+    <style>
+        .modal-title {
+            text-align: center;
+            /* This centers the title */
+            width: 100%;
+            /* Ensure the title is aligned within the full width */
+        }
+      /* Heartbeat Effect */
+@keyframes heartbeat {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+.animate-heartbeat {
+    animation: heartbeat 1.3s infinite ease-in-out;
+}
 
-        <div class="alerts-container">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-            {% for category, message in messages %}
+/* Pulsing Glow */
+@keyframes glow {
+    0% { box-shadow: 0 0 5px red; }
+    50% { box-shadow: 0 0 15px red; }
+    100% { box-shadow: 0 0 5px red; }
+}
+.animate-glow {
+    pointer-events: none;
+}
+
+/* Shake Effect */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    50% { transform: translateX(3px); }
+    75% { transform: translateX(-3px); }
+}
+.animate-shake {
+    animation: shake 0.8s infinite ease-in-out;
+}
+
+/* Slow Spinning Icon */
+@keyframes spin-slow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+    animation: spin-slow 3s linear infinite;
+}
+    </style>
+</head>
+
+<body class="bg-gray-100 font-thin">
+
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+            <path
+                d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+        </symbol>
+        <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+            <path
+                d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+        </symbol>
+        <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+            <path
+                d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+        </symbol>
+    </svg>
+
+<div class="fixed top-4 left-1/2 transform -translate-x-1/2 space-y-2 z-50 w-full max-w-md">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="flex items-center px-4 py-3 rounded-md shadow-md text-white 
+        {% if category == 'error' %} bg-red-600 {% else %} bg-green-600 {% endif %}">
+
+        <!-- Icon -->
+        <svg class="w-6 h-6 flex-shrink-0 mr-3" fill="currentColor" viewBox="0 0 16 16">
             {% if category == 'error' %}
-            <div class="alert alert-danger alert-dismissible fade show " role="alert">
-                <svg class="bi flex-shrink-0 me-2" style="margin-right: 4px; margin-bottom: 4px;" width="22" height="22" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
-                <span>{{ message }}</span>
-                <button type="button" class="close" data-dismiss="alert">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
+            <path
+                d="M8.982 1.566a1 1 0 0 0-1.964 0L.165 13.233c-.457.885.149 1.767 1.066 1.767h13.534c.917 0 1.523-.882 1.066-1.767L8.982 1.566zM8 5a.905.905 0 1 1 0 1.81A.905.905 0 0 1 8 5zm-.905 4.05a.905.905 0 1 1 1.81 0v1.81a.905.905 0 1 1-1.81 0V9.05z" />
             {% else %}
-            <div class="alert alert-success alert-dismissible fade show " role="alert">
-                <svg class="bi flex-shrink-0 me-2" style="margin-right: 4px; margin-bottom: 4px;" width="22" height="22" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
-                <span>{{ message }}</span>
-                <button type="button" class="close" data-dismiss="alert">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
+            <path
+                d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm3.354-8.646a.5.5 0 0 1 0 .707l-4 4a.5.5 0 0 1-.708 0l-2-2a.5.5 0 1 1 .708-.708L7 9.793l3.646-3.647a.5.5 0 0 1 .708 0z" />
             {% endif %}
-            {% endfor %}
-            {% endif %}
-            {% endwith %}
-        </div>
+        </svg>
 
-        <!-- Spinner Start -->
-        <div id="spinner" class="show position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-            <div class="spinner-border text-info" style="width: 3rem; height: 3rem;" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
+        <!-- Message -->
+        <span>{{ message }}</span>
+
+        <!-- Close Button -->
+        <button onclick="this.parentElement.remove()"
+            class="ml-auto text-lg font-semibold focus:outline-none">&times;</button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</div>
+
+
+    <!-- Spinner Start -->
+    <div id="spinner"
+        class="show position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+    </div>
+    <!-- Spinner End -->
+
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+<!-- Notification Bell Icon -->
+<i id="notification-bell"
+    class="fas fa-bell notification-icon transition-transform transform hover:scale-110 text-black text-3xl cursor-pointer absolute top-[25px] right-[2%]">
+    <span id="notification-count"
+        class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full hidden transition-opacity duration-300 ease-in-out">
+        0
+    </span>
+</i>
+
+<!-- Notification Modal -->
+<div id="notificationModal"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden opacity-0 transition-opacity duration-300 ease-in-out">
+    <div class="bg-white rounded-lg shadow-lg w-96 transform scale-95 transition-transform duration-300 ease-in-out">
+        <div class="p-4 border-b flex justify-between">
+            <h5 class="text-lg font-semibold">Notifications</h5>
+            <button id="closeNotificationModal" class="text-gray-500 text-xl">&times;</button>
         </div>
-        <!-- Spinner End -->
+        <div class="p-4 max-h-60 overflow-y-auto"> <!-- Scrollable List -->
+            <ul id="notificationList" class="divide-y divide-gray-200">
+                <!-- Notifications will be inserted here -->
+            </ul>
+        </div>
+        <div class="p-4 border-t text-right">
+            <button id="viewAllNotifications" class="text-blue-600">View All Notifications</button>
+        </div>
+    </div>
+</div>
+
+<!-- Full-Screen Notification Modal -->
+<div id="fullScreenNotificationModal"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden opacity-0 transition-opacity duration-300 ease-in-out">
+    <div
+        class="bg-white rounded-lg shadow-lg w-3/4 max-w-2xl transform scale-95 transition-transform duration-300 ease-in-out">
+        <div class="p-4 border-b flex justify-between">
+            <h5 class="text-lg font-semibold">All Notifications</h5>
+            <button id="closeFullScreenModal" class="text-gray-500 text-xl">&times;</button>
+        </div>
+        <div class="p-4 max-h-80 overflow-y-auto"> <!-- Scrollable List -->
+            <ul id="pastNotifications" class="divide-y divide-gray-200">
+                <!-- Full notification list -->
+            </ul>
+        </div>
+        <div class="p-4 border-t text-right">
+            <button id="closeFullScreenModalBtn" class="text-gray-600">Close</button>
+        </div>
+    </div>
+</div>
+
+
+    <!-- Audio Element for Sound -->
+    <audio id="modalSound" preload="auto">
+        <source src="{{ url_for('static', filename='alert-sound.wav') }}" type="audio/wav">
+        Your browser does not support the audio element.
+    </audio>
+
     
-        <div class="container">
-            {% block content %}
-            {% endblock %}
+<!-- Modal Structure -->
+<div id="lowDataModal" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="relative bg-white rounded-lg shadow-xl border-4 border-red-600 max-w-md w-full p-5 animate-shake">
+        <!-- Glowing Border -->
+    <div class="absolute inset-0 border-4 border-red-500 animate-glow rounded-lg"></div>
+
+        <!-- Modal Header -->
+        <div class="bg-yellow-500 border-b-4 border-red-700 flex justify-between items-center p-4 rounded-t-lg">
+            <h5 class="text-red-900 font-bold flex items-center text-2xl uppercase tracking-wider">
+                <i class="fas fa-exclamation-triangle text-red-800 text-3xl mr-3"></i> Warning!
+            </h5>
+            <button id="closeBtn" class="text-red-800 text-3xl hover:text-red-900 focus:outline-none">
+                &times;
+            </button>
         </div>
 
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-        
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-        <script src="{{ url_for('static', filename='index.js') }}"></script>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <!-- Modal Body -->
+        <div class="p-6 bg-red-100 text-center animate-pulse">
+            <i class="fas fa-exclamation-circle text-red-700 text-7xl mb-4 animate-spin-slow"></i>
+            <p id="modalMessage" class="text-xl font-bold text-red-900 uppercase tracking-wider">
+                <!-- Dynamic content will be inserted here -->
+            </p>
+        </div>
 
-    </body>
-    </html>
+        <!-- Modal Footer -->
+        <div class="bg-yellow-500 border-t-4 border-red-700 flex justify-center p-4 rounded-b-lg">
+            <button id="closeModalBtn"
+                class="bg-red-700 text-white font-bold px-10 py-3 rounded-lg text-lg hover:bg-red-800 focus:outline-none shadow-lg">
+                CLOSE ALERT
+            </button>
+        </div>
+    </div>
+</div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
+    <script src="https://cdn.plot.ly/plotly-2.20.0.min.js"></script>
+
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('lowDataModal');
+            const modalMessage = document.getElementById('modalMessage');
+            const modalSound = document.getElementById('modalSound');
+            const closeBtn = document.getElementById('closeBtn');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            let isModalActive = false;
+
+            // Enable looping on audio
+            modalSound.loop = true;
+
+            function playSound() {
+                if (modalSound.readyState >= 2) {
+                    modalSound.currentTime = 0;
+                    modalSound.play().catch(error => console.error('Error playing sound:', error));
+                }
+            }
+
+            function openModal(message) {
+                if (!isModalActive) {
+                    modalMessage.innerHTML = message;
+                    modal.style.display = 'flex';
+                    playSound();
+                    isModalActive = true;
+                }
+            }
+
+            function closeModal() {
+                modal.style.display = 'none';
+                modalSound.pause();
+                modalSound.currentTime = 0;
+                isModalActive = false;
+            }
+
+            // Debugging logs
+            console.log(modal, closeBtn, closeModalBtn);
+
+            // Close modal events
+            closeBtn.addEventListener('click', closeModal);
+            closeModalBtn.addEventListener('click', closeModal);
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape' && isModalActive) {
+                    closeModal();
+                }
+            });
+
+            function fetchNotification() {
+                fetch('/notifications')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.notification && data.notification.color === 'red' && !isModalActive) {
+                            openModal(data.notification.message);
+                        }
+                    })
+                    .catch(error => console.error('Error fetching notification:', error));
+            }
+
+            fetchNotification();
+            setInterval(fetchNotification, 10000);
+        });
+
+
+      document.getElementById("notification-bell").addEventListener("click", function () {
+            document.getElementById("notificationModal").classList.remove("hidden");
+            document.getElementById("notification-count").textContent = "0";
+            document.getElementById("notification-count").classList.add("hidden");
+            this.classList.remove("text-red-600"); // Reset bell color
+        });
+
+        document.getElementById("closeNotificationModal").addEventListener("click", function () {
+            document.getElementById("notificationModal").classList.add("hidden");
+        });
+
+        document.getElementById("viewAllNotifications").addEventListener("click", function () {
+            document.getElementById("notificationModal").classList.add("hidden");
+            document.getElementById("fullScreenNotificationModal").classList.remove("hidden");
+        });
+
+        document.getElementById("closeFullScreenModal").addEventListener("click", function () {
+            document.getElementById("fullScreenNotificationModal").classList.add("hidden");
+        });
+        document.getElementById("closeFullScreenModalBtn").addEventListener("click", function () {
+            document.getElementById("fullScreenNotificationModal").classList.add("hidden");
+        });
+
+      document.addEventListener("DOMContentLoaded", function () {
+            const notificationBell = document.getElementById('notification-bell');
+            const notificationModal = document.getElementById('notificationModal');
+            const closeNotificationModal = document.getElementById('closeNotificationModal');
+            const fullScreenModal = document.getElementById('fullScreenNotificationModal');
+            const closeFullScreenModal = document.getElementById('closeFullScreenModal');
+            const closeFullScreenModalBtn = document.getElementById('closeFullScreenModalBtn');
+            const viewAllNotifications = document.getElementById('viewAllNotifications');
+            const notificationCount = document.getElementById('notification-count');
+
+            function showModal(modal) {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    modal.querySelector('div').classList.remove('scale-95');
+                }, 10);
+            }
+
+            function hideModal(modal) {
+                modal.classList.add('opacity-0');
+                modal.querySelector('div').classList.add('scale-95');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            }
+
+            notificationBell.addEventListener('click', () => showModal(notificationModal));
+            closeNotificationModal.addEventListener('click', () => hideModal(notificationModal));
+            viewAllNotifications.addEventListener('click', () => {
+                hideModal(notificationModal);
+                showModal(fullScreenModal);
+            });
+            closeFullScreenModal.addEventListener('click', () => hideModal(fullScreenModal));
+            closeFullScreenModalBtn.addEventListener('click', () => hideModal(fullScreenModal));
+
+            // Fetch Notifications
+            function checkNotifications() {
+                fetch('/notifications')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.notification) {
+                            let notificationList = document.getElementById('notificationList');
+                            let notificationItem = document.createElement('li');
+                            notificationItem.classList.add("py-2", "px-4", "flex", "items-center", "animate-fadeIn");
+
+                            let icon = document.createElement('i');
+                            icon.classList.add('fas', data.notification.icon_class, 'mr-2');
+
+                            if (data.notification.color === 'red') {
+                                icon.classList.add('text-red-600');
+                            } else if (data.notification.color === 'orange') {
+                                icon.classList.add('text-orange-500');
+                            } else {
+                                icon.classList.add('text-green-600');
+                            }
+
+                            notificationItem.appendChild(icon);
+                            notificationItem.innerHTML += data.notification.message;
+                            notificationList.appendChild(notificationItem);
+
+                            let pastNotifications = document.getElementById('pastNotifications');
+                            let pastItem = notificationItem.cloneNode(true);
+                            pastNotifications.appendChild(pastItem);
+
+                            let count = parseInt(notificationCount.textContent) || 0;
+                            notificationCount.textContent = count + 1;
+                            notificationCount.classList.remove("hidden");
+
+                            notificationCount.classList.add("animate-bounce"); // Bounce effect
+                            setTimeout(() => {
+                                notificationCount.classList.remove("animate-bounce");
+                            }, 500);
+
+                            if (data.notification.color === 'red') {
+                                notificationBell.classList.add("text-red-600");
+                            } else if (data.notification.color === 'orange') {
+                                notificationBell.classList.add("text-orange-500");
+                            } else {
+                                notificationBell.classList.add("text-green-600");
+                            }
+                        }
+                    });
+            }
+
+            checkNotifications();
+            setInterval(checkNotifications, 10000);
+        });
+
+
+
+    </script>
+
+</body>
+
+</html>

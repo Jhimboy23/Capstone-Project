@@ -1,0 +1,182 @@
+<style>
+    /* Custom transition for smooth page load */
+    .page-transition {
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    }
+
+    /* Initial state (hidden and slightly shifted) */
+    .page-transition-hidden {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    /* Final state (visible and at normal position) */
+    .page-transition-visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>
+
+{% extends "base.html" %}
+{% block title %}Prediction{% endblock %}
+
+{% block content %}
+<div class="flex">
+    <!-- Sidebar -->
+    <div id="sidebar"
+        class="w-[75px] sm:w-56 bg-[#4C4B16] text-white min-h-screen transition-all duration-300 ease-in-out">
+        <div class="p-5">
+            <div class="bg-white rounded-lg w-36 h-28 hidden sm:block mx-auto">
+                <img src="/static/ASIA.png" alt="Sidebar Image"
+                    class="hidden sm:block w-32 h-28 mx-auto mt-[10px] px-1 pt-3">
+            </div>
+        </div>
+        <ul class="space-y-4 px-5">
+            <!-- Small Screens -->
+            <li class="block sm:hidden"><a href="/"
+                    class="block py-2 px-1 text-center text-xl hover:bg-black transition-all"><i
+                        class="fas fa-home"></i></a></li>
+            <li class="block sm:hidden"><a href="/forecasting"
+                    class="block py-2 px-1 text-center text-xl hover:bg-black transition-all"><i
+                        class="fas fa-chart-line"></i></a></li>
+            <li class="block sm:hidden"><a href="/controlPanel"
+                    class="block py-2 px-1 text-center text-xl hover:bg-black transition-all"><i
+                        class="fas fa-history"></i></a></li>
+            <li class="block sm:hidden"><a href="/settings"
+                    class="block py-2 px-1 text-center text-xl hover:bg-black transition-all"><i
+                        class="fas fa-cogs"></i></a></li>
+
+            <!-- Large Screens -->
+            <li class="hidden sm:flex items-center hover:bg-black rounded transition-all">
+                <a href="/" class="flex py-2 px-4 w-full mx-auto"><i class="fas fa-home mr-3"></i>
+                    <span>Home</span></a>
+            </li>
+            <li class="hidden sm:flex items-center hover:bg-black rounded transition-all">
+                <a href="/forecasting" class="flex py-2 px-4 w-full mx-auto"><i
+                        class="fas fa-chart-line mr-3"></i> <span>Prediction</span></a>
+            </li>
+            <li class="hidden sm:flex items-center hover:bg-black rounded transition-all">
+                <a href="/controlPanel" class="flex py-2 px-4 w-full mx-auto"><i
+                        class="fas fa-history mr-3"></i> <span>History</span></a>
+            </li>
+            <li class="hidden sm:flex items-center hover:bg-black rounded transition-all">
+                <a href="/settings" class="flex py-2 px-4 w-full mx-auto"><i
+                        class="fas fa-cogs mr-3"></i> <span>Settings</span></a>
+            </li>
+
+            <!-- Logout -->
+            <li class="block sm:hidden mt-10">
+                <a href="/logout"
+                    class="block py-2 px-1 text-center text-xl hover:bg-red-700 bg-red-600 rounded transition-all"><i
+                        class="fas fa-sign-out-alt"></i></a>
+            </li>
+            <li
+                class="hidden sm:flex items-center bg-gradient-to-r from-red-500 to-red-700 hover:from-red-600 hover:to-red-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 ease-in-out">
+                <a href="/logout"
+                    class="flex items-center py-3 px-5 w-full text-white font-semibold tracking-wide">
+                    <i class="fas fa-sign-out-alt mr-4 text-lg"></i> <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main content -->
+    <div id="main-content"
+        class="flex-1 p-3 md:p-4 lg:p-5 overflow-y-auto min-h-screen transition-all duration-500 ease-in-out">
+        <div class="w-full sm:max-w-4xl mx-auto bg-white shadow-lg rounded-xl p-6 space-y-8">
+            <h2 class="text-2xl font-semibold text-gray-800 text-center">Dashboard</h2>
+
+        <!-- Graphs -->
+        <div class="grid grid-cols-1 gap-8">
+            <div class="bg-gray-50 p-4 rounded-lg shadow-md">
+                <div class="relative w-full h-64">
+                    <div id="forecast-graph"></div>
+                </div>
+            </div>
+        
+            <div class="bg-gray-50 p-4 rounded-lg shadow-md">
+                <h3 class="text-lg font-medium text-gray-700 mb-2 text-center">Pie Chart</h3>
+                <div class="relative w-full h-64">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Include external libraries -->
+<script src="https://cdn.plot.ly/plotly-2.20.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+     function updateGraph() {
+            $.ajax({
+                url: '/forecast',
+                method: 'GET',
+                success: function (data) {
+                    if (data.error) {
+                        console.error(data.error);
+                        return;
+                    }
+
+                    // Process actual and forecast data
+                    const actual = data.actual.map(d => ({
+                        x: d.datetime,
+                        y: d.value
+                    }));
+                    const forecast = data.forecast.map(d => ({
+                        x: d.date,
+                        y: d.prediction
+                    }));
+
+                    // Graph data
+                    const traces = [
+                        {
+                            x: actual.map(d => d.x),
+                            y: actual.map(d => d.y),
+                            mode: 'lines+markers',
+                            name: 'Actual Data',
+                            fill: 'tozeroy',
+                            line: { color: 'blue' }
+                        },
+                        {
+                            x: forecast.map(d => d.x),
+                            y: forecast.map(d => d.y),
+                            mode: 'lines+markers',
+                            name: 'Predicted Data',
+                            fill: 'tozeroy',
+                            line: { color: 'orange', dash: 'dot' }
+                        }
+                    ];
+
+                    // Graph layout
+                    const layout = {
+                        title: 'Actual vs Predicted Data',
+                        xaxis: { title: 'Date' },
+                        yaxis: { title: 'Value' },
+                        legend: {
+                            orientation: 'v', // Vertical orientation
+                            x: 1.1, // Position legend outside graph to the right
+                            y: 1,
+                            xanchor: 'left'
+                        }
+                    };
+
+                    // Plot the graph
+                    Plotly.newPlot('forecast-graph', traces, layout);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching forecast data:', error);
+                }
+            });
+        }
+
+        // Initial load
+        updateGraph();
+
+        // Commented out dynamic update
+        // setInterval(updateGraph, 10000);
+
+</script>
+{% endblock %}
