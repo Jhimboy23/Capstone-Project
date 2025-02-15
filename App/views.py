@@ -695,9 +695,6 @@ def reading_sensor():
                 liters = request.form.get('liters')  
                 remainingfuel = request.form.get('remainingfuel')  # Get remaining fuel directly
 
-                if not (liters and remainingfuel):
-                    return jsonify({"error": "Missing liters or remainingFuel value"}), 400
-
             else:
                 return jsonify({"error": "Unsupported Content-Type"}), 415
 
