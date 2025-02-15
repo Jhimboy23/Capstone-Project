@@ -18,4 +18,6 @@ class Data(db.Model):
     fuel_consumed = db.Column(db.Float)  # Storing fuel consumed in liters or another appropriate unit
     percentage = db.Column(db.Integer)  # Storing fuel consumed in liters or another appropriate unit
     liters = db.Column(db.Integer)  # Storing fuel consumed in liters or another appropriate unit
+    remainingFuel = db.Column(db.Integer)  # Storing fuel consumed in liters or another appropriate unit
+
 
