@@ -38,7 +38,7 @@ def get_db_connection():
         return connection
     except Exception as e:
         print(f"Error while connecting to the database: {e}")
-        return None
+        return None 
 
 # Function to convert status into integers
 def convert_status(status_str):
@@ -693,9 +693,9 @@ def reading_sensor():
                 fuel_consumed = request.form.get('fuel_consumed')
                 percentage = request.form.get('percentage')
                 liters = request.form.get('liters')  
-                remainingFuel = request.form.get('remainingFuel')  # Get remaining fuel directly
+                remainingfuel = request.form.get('remainingfuel')  # Get remaining fuel directly
 
-                if not (liters and remainingFuel):
+                if not (liters and remainingfuel):
                     return jsonify({"error": "Missing liters or remainingFuel value"}), 400
 
             else:
@@ -707,7 +707,7 @@ def reading_sensor():
             cursor.execute(
                 "INSERT INTO public.\"data\" (distance, status, duration, fuel_consumed, percentage, liters, remainingFuel) "
                 "VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING datetime",
-                (distance, status, duration, fuel_consumed, percentage, liters, remainingFuel)
+                (distance, status, duration, fuel_consumed, percentage, liters, remainingfuel)
             )
             datetime = cursor.fetchone()[0]  # Fetch the `datetime` value of the inserted record
             connection.commit()
@@ -715,7 +715,7 @@ def reading_sensor():
             connection.close()
 
             # Append to CSV
-            append_to_csv([distance, status, duration, fuel_consumed, percentage, liters, remainingFuel, datetime])
+            append_to_csv([distance, status, duration, fuel_consumed, percentage, liters, remainingfuel, datetime])
 
             return jsonify({"message": "Data saved successfully and added to CSV!"}), 200
 
