@@ -705,10 +705,10 @@ def reading_sensor():
             connection = get_db_connection()
             cursor = connection.cursor()
             cursor.execute(
-            "INSERT INTO public.\"data\" (distance, status, duration, fuel_consumed, percentage, liters, remainingfuel) "
-            "VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING datetime",
-            (int(distance), status, int(duration), float(fuel_consumed), float(percentage), int(liters), float(remainingfuel))
-        )
+                "INSERT INTO public.\"data\" (distance, status, duration, fuel_consumed, percentage, liters, remainingFuel) "
+                "VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING datetime",
+                (distance, status, duration, fuel_consumed, percentage, liters, remainingfuel)
+            )
             datetime = cursor.fetchone()[0]  # Fetch the `datetime` value of the inserted record
             connection.commit()
             cursor.close()
