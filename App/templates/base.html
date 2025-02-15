@@ -215,7 +215,7 @@
 
 
     <script>
-      document.addEventListener('DOMContentLoaded', function () {
+     document.addEventListener('DOMContentLoaded', function () {
             const modal = document.getElementById('lowDataModal');
             const modalMessage = document.getElementById('modalMessage');
             const modalSound = document.getElementById('modalSound');
@@ -263,6 +263,12 @@
             });
 
             function fetchNotification() {
+                // Check if the user is on the login page
+                if (window.location.pathname === '/login') {
+                    console.log('Notification fetch disabled on login page');
+                    return;
+                }
+
                 fetch('/notifications')
                     .then(response => response.json())
                     .then(data => {
@@ -273,8 +279,11 @@
                     .catch(error => console.error('Error fetching notification:', error));
             }
 
-            fetchNotification();
-            setInterval(fetchNotification, 10000);
+            // Only fetch notifications if not on the login page
+            if (window.location.pathname !== '/login') {
+                fetchNotification();
+                setInterval(fetchNotification, 15000);
+            }
         });
 
 
