@@ -143,6 +143,7 @@ def append_to_csv(data):
         writer.writerow(data)
         
 @views.route('/', methods=['GET'])
+@login_required
 def home():
     averages = {}  # Dictionary to store averages for today, week, and month
     latest_liters = None  # Store latest liters value
@@ -154,7 +155,7 @@ def home():
         cursor = connection.cursor()
 
         # Query to fetch the last percentage, liters, distance, remainingFuel, and status
-        query = "SELECT percentage, liters, distance, remainingFuel, status FROM data ORDER BY datetime DESC LIMIT 1"
+        query = "SELECT percentage, liters, distance, remainingfuel, status FROM data ORDER BY datetime DESC LIMIT 1"
         cursor.execute(query)
         latest_reading = cursor.fetchone()  # Fetch the latest reading
 
@@ -408,25 +409,33 @@ def check_for_notifications():
 
             # Prepare notification details based on the status
             if status == 'high':
-                # No notification for high status
-                return None
+                return None  # No notification for high status
+            
             elif status == 'moderate':
-                # Notification for moderate status
                 message = f"Fuel supply is <span style='color:orange;'>{remainingFuel}%</span>. Fuel level: <span style='color:orange;'>Moderate</span>."
                 return {
                     'message': message,
                     'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                    'icon_class': 'fa-exclamation-circle',  # Orange moderate level icon
-                    'color': 'orange'  # Text color for moderate level
+                    'icon_class': 'fa-exclamation-circle',
+                    'color': 'orange'
                 }
+            
             elif status == 'low':
-                # Notification for low status
-                message = f"Fuel supply is <span style='color:red;'>{remainingFuel}%</span>. Fuel level: <span style='color:red;'>Low</span>."
+                message = f"⚠️ Fuel supply is <span style='color:red;'>{remainingFuel}%</span>. Fuel level: <span style='color:red;'>Low</span>. Please refill soon!"
                 return {
                     'message': message,
                     'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                    'icon_class': 'fa-exclamation-triangle',  # Red warning triangle icon
-                    'color': 'red'  # Text color for low level
+                    'icon_class': 'fa-exclamation-triangle',
+                    'color': 'red'
+                }
+
+            elif status == 'empty':
+                message = f"🚨 Fuel supply is <span style='color:red;'>0%</span>. <b>Tank is EMPTY!</b> Immediate action required!"
+                return {
+                    'message': message,
+                    'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                    'icon_class': 'fa-skull-crossbones',  # Extreme warning icon
+                    'color': 'red'
                 }
 
         return None  # No notification if no reading is found
@@ -438,6 +447,7 @@ def check_for_notifications():
     finally:
         if connection:
             connection.close()
+
 
 @views.route('/notifications', methods=['GET'])
 def get_notifications():

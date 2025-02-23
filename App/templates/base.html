@@ -130,7 +130,8 @@
 <!-- Notification Modal -->
 <div id="notificationModal"
     class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden opacity-0 transition-opacity duration-300 ease-in-out">
-    <div class="bg-white rounded-lg shadow-lg w-96 transform scale-95 transition-transform duration-300 ease-in-out">
+<div
+    class="bg-white rounded-lg shadow-lg w-[300rem] max-w-lg transform scale-95 transition-transform duration-300 ease-in-out">
         <div class="p-4 border-b flex justify-between">
             <h5 class="text-lg font-semibold">Notifications</h5>
             <button id="closeNotificationModal" class="text-gray-500 text-xl">&times;</button>
@@ -209,6 +210,7 @@
 </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
     <script src="{{ url_for('static', filename='index.js') }}"></script>
     <script src="https://cdn.plot.ly/plotly-2.20.0.min.js"></script>
@@ -262,28 +264,34 @@
                 }
             });
 
-            function fetchNotification() {
-                // Check if the user is on the login page
-                if (window.location.pathname === '/login') {
-                    console.log('Notification fetch disabled on login page');
-                    return;
-                }
+           function fetchNotification() {
+             if (window.location.pathname === '/login') {
+                 console.log('Notification fetch disabled on login page');
+                 return;
+             }
 
-                fetch('/notifications')
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.notification && data.notification.color === 'red' && !isModalActive) {
-                            openModal(data.notification.message);
-                        }
-                    })
-                    .catch(error => console.error('Error fetching notification:', error));
-            }
+             fetch('/notifications')
+                 .then(response => response.json())
+                 .then(data => {
+                     if (data.notification) {
+                         let message = data.notification.message;
+                         let color = data.notification.color;
 
-            // Only fetch notifications if not on the login page
-            if (window.location.pathname !== '/login') {
-                fetchNotification();
-                setInterval(fetchNotification, 15000);
-            }
+                         if ((color === 'red' && !isModalActive) || (message.includes("EMPTY"))) {
+                             openModal(message);
+                         }
+
+                         // Update bell icon color for empty state
+                         if (message.includes("EMPTY")) {
+                             document.getElementById("notification-bell").classList.add("text-red-700");
+                         }
+                     }
+                 })
+                 .catch(error => console.error('Error fetching notification:', error));
+         }
+
+         fetchNotification();
+         setInterval(fetchNotification, 10000);
         });
 
 

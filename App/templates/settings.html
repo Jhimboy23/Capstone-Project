@@ -2,9 +2,9 @@
 {% block title %}Settings{% endblock %}
 
 {% block content %}
-<!-- Sidebar -->
-<div class="flex">
-    <!-- Sidebar content -->
+<!-- Sidebar content -->
+<div class="flex h-auto">
+    {% set active_page = request.path %}
     <div id="sidebar" class="w-[75px] sm:w-56 bg-[#4C4B16] text-white h-screen transition-all duration-300 ease-in-out">
         <div class="p-5">
             <div class="bg-white rounded-lg w-36 h-28 hidden sm:block mx-auto">
@@ -16,43 +16,46 @@
         <ul class="space-y-4 px-5">
             <!-- For small screens, show only icons -->
             <li class="block sm:hidden"><a href="/"
-                    class="block py-2 px-1 text-center text-xl hover:bg-black transition-all">
+                    class="block py-2 px-1 text-center text-xl hover:bg-black transition-all {% if active_page == '/' %}bg-[#AB886D]{% endif %}">
                     <i class="fas fa-home"></i>
                 </a></li>
             <li class="block sm:hidden"><a href="/forecasting"
-                    class="block py-2 px-1 text-center text-xl hover:bg-black transition-all">
+                    class="block py-2 px-1 text-center text-xl hover:bg-black transition-all {% if active_page == '/forecasting' %}bg-[#AB886D]{% endif %}">
                     <i class="fas fa-info-circle"></i>
                 </a></li>
             <li class="block sm:hidden"><a href="/controlPanel"
-                    class="block py-2 px-1 text-center text-xl hover:bg-black transition-all">
+                    class="block py-2 px-1 text-center text-xl hover:bg-black transition-all {% if active_page == '/controlPanel' %}bg-[#AB886D]{% endif %}">
                     <i class="fas fa-history"></i>
                 </a></li>
             <li class="block sm:hidden"><a href="/settings"
-                    class="block py-2 px-1 text-center text-xl hover:bg-black transition-all">
+                    class="block py-2 px-1 text-center text-xl hover:bg-black transition-all {% if active_page == '/settings' %}bg-[#AB886D]{% endif %}">
                     <i class="fas fa-cogs"></i>
                 </a></li>
 
             <!-- For larger screens, show both text and icons -->
-            <li class="hidden sm:flex items-center hover:bg-black rounded transition-all">
+            <li
+                class="hidden sm:flex items-center rounded transition-all hover:bg-[#AB886D] {% if active_page == '/' %}bg-[#AB886D]{% endif %}">
                 <a href="/" class="flex py-2 px-4 w-full mx-auto">
                     <i class="fas fa-home mr-3"></i>
                     <span class="hidden sm:block">Home</span>
                 </a>
             </li>
-            <li class="hidden sm:flex items-center hover:bg-black rounded transition-all">
+            <li
+                class="hidden sm:flex items-center rounded transition-all hover:bg-[#AB886D] {% if active_page == '/forecasting' %}bg-[#AB886D]{% endif %}">
                 <a href="/forecasting" class="flex py-2 px-4 w-full mx-auto">
                     <i class="fas fa-chart-line mr-3"></i>
                     <span class="hidden sm:block">Prediction</span>
                 </a>
             </li>
-            <li class="hidden sm:flex items-center hover:bg-black rounded transition-all">
+            <li
+                class="hidden sm:flex items-center rounded transition-all hover:bg-[#AB886D] {% if active_page == '/controlPanel' %}bg-[#AB886D]{% endif %}">
                 <a href="/controlPanel" class="flex py-2 px-4 w-full mx-auto">
                     <i class="fas fa-history mr-3"></i>
                     <span class="hidden sm:block">History</span>
                 </a>
             </li>
-            <!-- Settings with Increased Bottom Margin -->
-            <li class="hidden sm:flex items-center hover:bg-black rounded transition-all">
+            <li
+                class="hidden sm:flex items-center rounded transition-all hover:bg-[#AB886D] {% if active_page == '/settings' %}bg-[#AB886D]{% endif %}">
                 <a href="/settings" class="flex py-2 px-4 w-full mx-auto">
                     <i class="fas fa-cogs mr-3"></i>
                     <span class="hidden sm:block">Settings</span>
@@ -78,63 +81,68 @@
         </ul>
     </div>
 
-    <!-- Main content -->
-    <div id="main-content"
-        class="flex-1 p-3 md:p-4 lg:p-5 page-transition overflow-y-auto h-screen page-transition-hidden transition-all duration-500 ease-in-out">
+<!-- Main content -->
+<div id="main-content"
+    class="flex-1 p-3 md:p-4 lg:p-5 overflow-y-auto h-screen opacity-0 translate-y-8 transition-all duration-[1200ms] ease-[cubic-bezier(0.4, 0, 0.2, 1)]">
 
-        <div
-            class="w-full sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl mx-auto bg-white shadow-lg rounded-xl p-4 sm:p-6 md:p-8">
+    <div
+        class="w-full sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl mx-auto bg-white shadow-lg rounded-xl p-4 sm:p-6 md:p-8">
 
-            <h2 class="text-xl sm:text-2xl lg:text-3xl font-semibold text-gray-800 mb-4 text-center">Edit Profile</h2>
+        <h2 class="text-xl sm:text-2xl lg:text-3xl font-semibold text-gray-800 mb-4 text-center">Edit Profile</h2>
 
-            <form action="#" method="POST" class="space-y-4">
+        <form action="#" method="POST" class="space-y-4">
+            <!-- Change Email -->
+            <div>
+                <label for="email" class="block text-gray-700 font-medium mb-1 sm:mb-2">Change Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter new email"
+                    class="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg shadow-sm transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#4C4B16] focus:border-[#4C4B16]"
+                    value="{{ user.email }}" required>
+            </div>
 
-                <!-- Change Email -->
-                <div>
-                    <label for="email" class="block text-gray-700 font-medium mb-1 sm:mb-2">Change Email</label>
-                    <input type="email" id="email" name="email" placeholder="Enter new email"
-                        class="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg shadow-sm transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#4C4B16] focus:border-[#4C4B16]" value="{{ user.email }}"
-                        required>
-                </div>
+            <!-- Change Name -->
+            <div>
+                <label for="firstName" class="block text-gray-700 font-medium mb-1 sm:mb-2">Change Name</label>
+                <input type="text" id="firstName" name="firstName" placeholder="Enter new name"
+                    class="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg shadow-sm transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#4C4B16] focus:border-[#4C4B16]"
+                    value="{{ user.first_name }}" required>
+            </div>
 
-                <!-- Change Name -->
-                <div>
-                    <label for="firstName" class="block text-gray-700 font-medium mb-1 sm:mb-2">Change Name</label>
-                    <input type="text" id="firstName" name="firstName" placeholder="Enter new name"
-                        class="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg shadow-sm transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#4C4B16] focus:border-[#4C4B16]" value="{{ user.first_name }}"
-                        required>
-                </div>
+            <!-- Change Password -->
+            <div>
+                <label for="password1" class="block text-gray-700 font-medium mb-1 sm:mb-2">New Password</label>
+                <input type="password" id="password1" name="password1" placeholder="Enter new password"
+                    class="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg shadow-sm transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#4C4B16] focus:border-[#4C4B16]"
+                    required>
+            </div>
 
-                <!-- Change Password -->
-                <div>
-                    <label for="password1" class="block text-gray-700 font-medium mb-1 sm:mb-2">New Password</label>
-                    <input type="password" id="password1" name="password1" placeholder="Enter new password"
-                        class="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg shadow-sm transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#4C4B16] focus:border-[#4C4B16]"
-                        required>
-                </div>
+            <!-- Confirm Password -->
+            <div>
+                <label for="password2" class="block text-gray-700 font-medium mb-1 sm:mb-2">Confirm Password</label>
+                <input type="password" id="password2" name="password2" placeholder="Confirm new password"
+                    class="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg shadow-sm transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#4C4B16] focus:border-[#4C4B16]"
+                    required>
+            </div>
 
-                <!-- Confirm Password -->
-                <div>
-                    <label for="password2" class="block text-gray-700 font-medium mb-1 sm:mb-2">Confirm
-                        Password</label>
-                    <input type="password" id="password2" name="password2"
-                        placeholder="Confirm new password"
-                        class="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg shadow-sm transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#4C4B16] focus:border-[#4C4B16]"
-                        required>
-                </div>
-
-                <!-- Update Button -->
-                <div class="flex justify-center">
-                    <button type="submit"
-                        class="bg-[#4C4B16] text-white px-5 py-2 sm:px-6 sm:py-3 rounded-lg shadow hover:bg-[#3a3911] transition duration-300">
-                        Update Profile
-                    </button>
-                </div>
-            </form>
-        </div>
+            <!-- Update Button -->
+            <div class="flex justify-center">
+                <button type="submit"
+                    class="bg-[#4C4B16] text-white px-5 py-2 sm:px-6 sm:py-3 rounded-lg shadow hover:bg-[#3a3911] transition duration-300">
+                    Update Profile
+                </button>
+            </div>
+        </form>
     </div>
-
-
 </div>
+
+<!-- JavaScript for Smooth Page Transition -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const mainContent = document.getElementById("main-content");
+        setTimeout(() => {
+            mainContent.classList.remove("opacity-0", "translate-y-8");
+        }, 50); // Small delay for a natural effect
+    });
+</script>
+
 
 {% endblock %}
