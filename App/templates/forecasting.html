@@ -132,7 +132,7 @@
 </div>
 
 <script>
-    function updateGraph() {
+   function updateGraph() {
         $.ajax({
             url: '/forecast',
             method: 'GET',
@@ -178,7 +178,7 @@
                 const layout = {
                     title: 'Predicted Fuel Consumption for the Next 30 Days',
                     xaxis: { title: 'Date' },
-                    yaxis: { title: 'Value' },
+                    yaxis: { title: 'Fuel Level (cm)' },
                     hovermode: "x unified", // Unified hover tooltip
                     legend: {
                         orientation: 'v', // Vertical orientation
@@ -199,14 +199,9 @@
 
                 // Check if the graph exists, update instead of redrawing
                 if ($('#forecast-graph').hasClass('initialized')) {
-                    Plotly.animate('forecast-graph', {
-                        data: traces
-                    }, {
-                        transition: { duration: 600, easing: "cubic-in-out" },
-                        frame: { duration: 600 }
-                    });
+                    Plotly.react('forecast-graph', traces, layout);
                 } else {
-                    Plotly.newPlot('forecast-graph', traces, layout);
+                    Plotly.newPlot('forecast-graph', traces, layout, { responsive: true });
                     $('#forecast-graph').addClass('initialized');
                 }
 
@@ -218,6 +213,13 @@
             }
         });
     }
+
+    // Resize graph dynamically when the window resizes
+    window.onresize = function () {
+        Plotly.relayout('forecast-graph', {
+            'autosize': true
+        });
+    };
 
     // Initial load
     updateGraph();

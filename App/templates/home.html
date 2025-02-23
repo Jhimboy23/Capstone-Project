@@ -144,7 +144,7 @@
             Remaining Fuel: <span id="remainingFuel">{{ remainingFuel }}</span>cm
         </p>
         <p class="text-sm md:text-base lg:text-lg text-gray-600 mb-1 text-left">Empty Space: <span id="distance"
-                class="font-medium text-black">{{ distance }}</span>cm
+                class="font-medium text-black">{{ distance }}</span><span class="font-medium text-black">cm</span>
         </p>
         <p class="text-sm md:text-base lg:text-lg text-gray-600 mb-1 text-left">Liter Conversion: <span id="liters"
                 class="font-medium text-black">{{ liters }}</span> out of <span class="font-medium text-black">2081(L)</span>
@@ -227,7 +227,7 @@
                 domain: [0, 0.85] // Graph occupies 85% of width
             },
             yaxis: {
-                title: 'Fuel Level (%)',
+                title: 'Fuel Level (cm)',
                 range: [0, 100]
             },
             margin: { t: 50, b: 60, l: 50, r: 20 }, // Adjusted right margin
@@ -434,7 +434,7 @@
             const layout = {
                 title: "Remaining Fuel Over Time",
                 xaxis: { title: "Reading Index", tickmode: "array", tickvals: indices, ticktext: indices.map(x => x.toFixed(1)), automargin: true },
-                yaxis: { title: "Remaining Fuel (cm)", range: [0, 100], tickvals: [0, 20, 40, 60, 80, 100] }
+                yaxis: { title: "Fuel Level (cm)", range: [0, 100], tickvals: [0, 20, 40, 60, 80, 100] }
             };
 
             Plotly.newPlot("chart", [trace], layout, { responsive: true });

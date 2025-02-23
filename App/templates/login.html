@@ -1,79 +1,125 @@
-<style>
-
-#notification-bell {
-  display: none;
-}
-
-body {
-  background-color: #4C4B16; /* Olive Green */
-}
-
-/* Custom styles for full image */
-.full-image {
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
-}
-
-/* Custom animation for button */
-.btn-anim {
-  transition: all 0.3s ease-in-out;
-}
-
-.btn-anim:hover {
-  transform: scale(1.05);
-  background-color: #3A3A10; /* Slightly darker shade */
-}
-
-/* Custom animation for input focus */
-.input-focus:focus {
-  border-color: #4C4B16;
-  box-shadow: 0 0 5px rgba(76, 75, 22, 0.8);
-}
-
-
-</style>
-
 {% extends "base.html" %}
+
 {% block title %}Login{% endblock %}
 
 {% block content %}
+
+<style>
+  #notification-bell {
+    display: none;
+  }
+
+  /* Smooth Page Transition */
+  body {
+    background-color: #4C4B16;
+    /* Olive Green */
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+  }
+
+  /* Full Image Styling */
+  .full-image {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 1s ease-in-out, transform 0.8s ease-in-out;
+  }
+
+  /* Button Animation */
+  .btn-anim {
+    transition: all 0.3s ease-in-out;
+  }
+
+  .btn-anim:hover {
+    transform: scale(1.05);
+    background-color: #3A3A10;
+    /* Darker Olive Green */
+  }
+
+  /* Input Focus Animation */
+  .input-focus:focus {
+    border-color: #4C4B16;
+    box-shadow: 0 0 8px rgba(76, 75, 22, 0.8);
+    transition: box-shadow 0.3s ease-in-out;
+  }
+
+  /* Card Fade-In Effect */
+  .login-card {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
+  }
+</style>
+
+<!-- Page Wrapper -->
 <div class="flex justify-center items-center min-h-screen bg-[#4C4B16]">
-    <div class="flex w-full max-w-4xl bg-white rounded-lg shadow-lg mx-4">
+  <div class="flex w-full max-w-4xl bg-white rounded-lg shadow-lg mx-4 login-card">
 
-        <!-- Login Form Section -->
-        <div class="w-full sm:w-1/2 p-8">
-            <form method="POST" class="space-y-6">
-                <!-- Logo Section (Optional) -->
-                <div class="flex justify-center mb-6">
-                    <img src="{{ url_for('static', filename='ASIA.png') }}" alt="Logo" class="w-24 h-24">
-                </div>
-
-                <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                    <input type="email" id="email" name="email" placeholder="Enter your email"
-                        class="input-focus mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4C4B16]">
-                </div>
-
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                    <input type="password" id="password" name="password" placeholder="Enter your password" required
-                        class="input-focus mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4C4B16]">
-                </div>
-
-                <!-- Updated button with animation -->
-                <button type="submit"
-                    class="btn-anim w-full bg-[#4C4B16] text-white py-2 px-4 rounded-md hover:bg-[#3A3A10] focus:outline-none focus:ring-2 focus:ring-[#4C4B16] text-center block">
-                    Login
-                </button>
-            </form>
+    <!-- Login Form Section -->
+    <div class="w-full sm:w-1/2 p-8">
+      <form method="POST" class="space-y-6">
+        <!-- Logo Section -->
+        <div class="flex justify-center mb-6">
+          <img src="{{ url_for('static', filename='ASIA.png') }}" alt="Logo"
+            class="w-24 h-24 opacity-0 transform scale-90 transition-all duration-700 delay-300">
         </div>
 
-        <!-- Image Section (Hidden on small screens) -->
-        <div class="hidden sm:flex w-1/2 justify-center items-center">
-            <img src="{{ url_for('static', filename='image10.png') }}" alt="Image" class="full-image">
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+          <input type="email" id="email" name="email" placeholder="Enter your email"
+            class="input-focus mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4C4B16]">
         </div>
 
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+          <input type="password" id="password" name="password" placeholder="Enter your password" required
+            class="input-focus mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4C4B16]">
+        </div>
+
+        <!-- Animated Login Button -->
+        <button type="submit"
+          class="btn-anim w-full bg-[#4C4B16] text-white py-2 px-4 rounded-md hover:bg-[#3A3A10] focus:outline-none focus:ring-2 focus:ring-[#4C4B16] text-center block">
+          Login
+        </button>
+      </form>
     </div>
+
+    <!-- Image Section (Hidden on Small Screens) -->
+    <div class="hidden sm:flex w-1/2 justify-center items-center">
+      <img src="{{ url_for('static', filename='image10.png') }}" alt="Image" class="full-image">
+    </div>
+
+  </div>
 </div>
+
+<!-- Smooth Page Load & Exit Effects -->
+<script>
+  window.addEventListener("load", function () {
+    // Apply fade-in effect
+    document.body.style.opacity = "1";
+
+    // Animate the login card
+    document.querySelector(".login-card").style.opacity = "1";
+    document.querySelector(".login-card").style.transform = "translateY(0)";
+
+    // Animate the image fade-in
+    let img = document.querySelector(".full-image");
+    if (img) {
+      img.style.opacity = "1";
+      img.style.transform = "scale(1)";
+    }
+
+    // Animate the logo
+    document.querySelector("img.w-24").style.opacity = "1";
+    document.querySelector("img.w-24").style.transform = "scale(1)";
+  });
+
+  // Smooth fade-out effect on exit
+  window.addEventListener("beforeunload", function () {
+    document.body.style.opacity = "0";
+  });
+</script>
+
 {% endblock %}

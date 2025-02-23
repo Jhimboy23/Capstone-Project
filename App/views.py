@@ -412,7 +412,8 @@ def check_for_notifications():
                 return None  # No notification for high status
             
             elif status == 'moderate':
-                message = f"Fuel supply is <span style='color:orange;'>{remainingFuel}%</span>. Fuel level: <span style='color:orange;'>Moderate</span>."
+                message = f" Fuel supply is <span style='color:orange;'>{remainingFuel[0] if isinstance(remainingFuel, list) else remainingFuel}%</span>. Fuel level: <span style='color:orange;'>Moderate</span>."
+                # message = f"Fuel supply is <span style='color:orange;'>{remainingFuel}%</span>. Fuel level: <span style='color:orange;'>Moderate</span>."
                 return {
                     'message': message,
                     'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
@@ -421,7 +422,7 @@ def check_for_notifications():
                 }
             
             elif status == 'low':
-                message = f"⚠️ Fuel supply is <span style='color:red;'>{remainingFuel}%</span>. Fuel level: <span style='color:red;'>Low</span>. Please refill soon!"
+                message = f" Fuel supply is <span style='color:red;'>{remainingFuel[0] if isinstance(remainingFuel, list) else remainingFuel}%</span>. Fuel level: <span style='color:red;'>Low</span>. Please refill soon!"
                 return {
                     'message': message,
                     'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
