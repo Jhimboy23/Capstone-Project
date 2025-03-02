@@ -228,8 +228,7 @@
     // Uncomment this if you want auto-updates
     // setInterval(updateGraph, 10000);
 
-   // Fetch the forecast data from the backend
-    fetch('/forecast?days=30')
+  fetch('/forecast?days=30')
         .then(response => response.json())
         .then(data => {
             const forecastData = data.forecast;
@@ -276,7 +275,7 @@
             });
 
             // Setup the bar chart
-        const ctx = document.getElementById('forecastChart').getContext('2d');
+            const ctx = document.getElementById('forecastChart').getContext('2d');
             const chart = new Chart(ctx, {
                 type: 'bar', // Change to 'pie' if using a pie chart
                 data: {
@@ -308,13 +307,7 @@
                             }
                         },
                         legend: {
-                            display: true,
-                            position: 'bottom', // Moves legend below
-                            labels: {
-                                font: {
-                                    size: 14
-                                }
-                            }
+                            display: false // <-- Legend is removed
                         },
                         tooltip: {
                             backgroundColor: 'rgba(0,0,0,0.8)',
@@ -329,9 +322,9 @@
                 }
             });
 
-
         })
         .catch(error => console.error('Error fetching forecast data:', error));
+
 
 </script>
 {% endblock %}

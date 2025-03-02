@@ -19,6 +19,7 @@ import threading
 import pandas as pd
 import joblib
 from datetime import timedelta
+import pytz
 
 views = Blueprint('views', __name__)
 
@@ -468,13 +469,18 @@ def get_distance():
         if connection:
             cursor = connection.cursor()
 
-            # Query to fetch the latest distance, liters, remainingFuel, percentage, status, and datetime
-            query = "SELECT percentage, distance, liters, remainingFuel, status, datetime FROM public.\"data\" ORDER BY datetime DESC LIMIT 10"
+            # Query to fetch the latest data
+            query = """
+            SELECT percentage, distance, liters, remainingFuel, status, datetime
+            FROM public."data"
+            ORDER BY datetime DESC LIMIT 10
+            """
             cursor.execute(query)
             readings = cursor.fetchall()
 
             if readings:
-                # Format the readings into a list of dictionaries
+                # Convert datetime to local timezone
+                local_tz = pytz.timezone('Asia/Manila')  # Change to your timezone
                 formatted_readings = [
                     {
                         'percentage': reading[0],
@@ -482,7 +488,7 @@ def get_distance():
                         'liters': reading[2],
                         'remainingFuel': reading[3],
                         'status': reading[4],
-                        'datetime': reading[5]
+                        'datetime': reading[5].astimezone(local_tz).strftime('%Y-%m-%d %H:%M:%S') if reading[5] else None
                     }
                     for reading in readings
                 ]
@@ -497,10 +503,9 @@ def get_distance():
         if connection:
             connection.close()
 
-
 # Route to download the PDF with sensor data
 @views.route('/download_pdf')
-@login_required  # Ensure the user is logged in
+@login_required
 def download_pdf():
     try:
         # Get database connection
@@ -510,58 +515,73 @@ def download_pdf():
 
         cursor = connection.cursor()
 
-        # Query to fetch all rows from the "data" table
-        cursor.execute('SELECT distance, status, datetime, duration, fuel_consumed, percentage FROM public."data";')
+        # **Set timezone to Asia/Manila**
+        cursor.execute("SET TIME ZONE 'Asia/Manila';")
+
+        # Fetch only today's data (adjusting for Manila timezone)
+        today_date = datetime.now().strftime("%Y-%m-%d")
+        cursor.execute("""
+            SELECT remainingFuel, distance, liters, status, datetime, duration
+            FROM public."data"
+            WHERE datetime::text LIKE %s;
+        """, (today_date + "%",))
         data_rows = cursor.fetchall()
 
         cursor.close()
         connection.close()
 
-        # Create a PDF in memory using SimpleDocTemplate and Table for better layout
+        # Create PDF in memory
         buffer = BytesIO()
-        doc = SimpleDocTemplate(buffer, pagesize=letter)
+        doc = SimpleDocTemplate(buffer, pagesize=letter, leftMargin=20, rightMargin=20, topMargin=20, bottomMargin=30)
 
-        # Create current date and time string
-        current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # Table headers (with `cm` label and proper spacing)
+        table_data = [["Remaining Fuel (cm)", "Empty Space", "Liters", "Status", "Date/Time", "Duration"]]
 
-        # Prepare data for the table (Remove ID column)
-        table_data = [
-            ["Distance", "Status", "Date/Time", "Duration", "Fuel Consumed", "Percentage"]  # Updated Headers
-        ]
-
-        # Add rows of data to table
+        # Add data rows
         for row in data_rows:
-            table_data.append([str(row[0]), str(row[1]), str(row[2]), str(row[3]), str(row[4]), str(row[5])])
+            remaining_fuel = row[0]
+            if isinstance(remaining_fuel, (list, tuple)):  # Remove `[ ]` if stored as an array
+                remaining_fuel = remaining_fuel[0]
+            
+            table_data.append([
+                str(remaining_fuel), str(row[1]), str(row[2]), str(row[3]),  
+                str(row[4]), str(row[5])
+            ])
 
-        # Create a Table object
-        table = Table(table_data)
+        # Adjust column widths to prevent text overlap
+        col_widths = [100, 60, 50, 60, 160, 60]  # Expanded Remaining Fuel and Date/Time columns
 
-        # Style the table (add borders, alignment, padding, etc.)
+        # Create Table object
+        table = Table(table_data, colWidths=col_widths)
+
+        # Style adjustments
         table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),  # Table header background
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),  # Header background
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),  # Header text color
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  # Center align all content
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),  # Header font style
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),  # Padding for header
-            ('BACKGROUND', (0, 1), (-1, -1), colors.white),  # Background color for data rows
-            ('GRID', (0, 0), (-1, -1), 1, colors.black),  # Add grid (borders) around the table
-            ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),  # Data font style
-            ('FONTSIZE', (0, 0), (-1, -1), 10),  # Font size
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  # Align all text to the center
-            ('TOPPADDING', (0, 0), (-1, -1), 8),  # Padding for cells
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
-            ('LEFTPADDING', (0, 0), (-1, -1), 8),
-            ('RIGHTPADDING', (0, 0), (-1, -1), 8),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  # Center align text
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),  # Bold headers
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 6),  # Reduce padding
+            ('BACKGROUND', (0, 1), (-1, -1), colors.white),  # Data rows background
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.black),  # Thin grid lines
+            ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),  # Regular font for data
+            ('FONTSIZE', (0, 0), (-1, -1), 9),  # Adjust font size
+            ('TOPPADDING', (0, 0), (-1, -1), 4),  # Reduce padding
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+            ('LEFTPADDING', (0, 0), (-1, -1), 3),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 3),
+            ('WORDWRAP', (0, 1), (0, -1)),  # Enable text wrapping for Remaining Fuel
         ]))
 
-        # Start building the PDF
-        content = []
+        # PDF content
+        content = [table]
 
-        # Add the table to the PDF content
-        content.append(table)
+        # **Get the correct local datetime for the footer**
+        manila_tz = pytz.timezone('Asia/Manila')
+        local_time = datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(manila_tz)
+        formatted_time = local_time.strftime("%Y-%m-%d %H:%M:%S")
 
-        # Add the footer with the current date and time
-        doc.build(content, onFirstPage=lambda canvas, doc: draw_footer(canvas, current_datetime), onLaterPages=lambda canvas, doc: draw_footer(canvas, current_datetime))
+        # Build the PDF with the correct footer timestamp
+        doc.build(content, onFirstPage=lambda canvas, doc: draw_footer(canvas, formatted_time), onLaterPages=lambda canvas, doc: draw_footer(canvas, formatted_time))
 
         # Move to the beginning of the buffer
         buffer.seek(0)
@@ -570,23 +590,19 @@ def download_pdf():
         return send_file(buffer, as_attachment=True, download_name="sensor_data_report.pdf", mimetype='application/pdf')
 
     except Exception as e:
-        # Handle errors gracefully
         return jsonify({'error': str(e)}), 500
 
-# Function to draw the footer on each page (right side)
-def draw_footer(canvas, current_datetime):
+# Function to draw footer with the correct local time
+def draw_footer(canvas, formatted_time):
     canvas.saveState()
     canvas.setFont("Helvetica", 8)
     canvas.setFillColor(colors.black)
-    
-    # Adjust the position to ensure it stays within the margin and is aligned to the right
-    x_position = 400  # Adjusted x position to fit text within page margins
-    y_position = 15   # Set at the bottom of the page, but not overlapping the margin
-    
-    # Draw the footer text ensuring it's within page width
-    footer_text = f"Data Report Generated on: {current_datetime}"
+    x_position = 400  
+    y_position = 15  
+    footer_text = f"Data Report Generated on: {formatted_time}"
     canvas.drawString(x_position, y_position, footer_text)
     canvas.restoreState()
+
 
 # Define the relative paths for the CSV file and the model
 CSV_FILE_PATH = "data.csv"
