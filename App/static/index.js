@@ -39,7 +39,7 @@
   }
   
   // Fetch distance data periodically
-  setInterval(fetchDistance, 5000 );  // Update every 5 second
+  setInterval(fetchDistance, 10000 );  // Update every 5 second
   
   // Initial fetch to populate data on page load
   fetchDistance();

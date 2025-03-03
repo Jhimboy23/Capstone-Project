@@ -147,7 +147,7 @@
                 class="font-medium text-black">{{ distance }}</span><span class="font-medium text-black">cm</span>
         </p>
         <p class="text-sm md:text-base lg:text-lg text-gray-600 mb-1 text-left">Liter Conversion: <span id="liters"
-                class="font-medium text-black">{{ liters }}</span> out of <span class="font-medium text-black">2081(L)</span>
+                class="font-medium text-black">{{ liters }}</span> out of <span class="font-medium text-black">144460(L)</span>
         </p>
             <p class="text-sm md:text-base lg:text-lg text-gray-500 font-semibold text-left">
                 Status: <span id="status">{{ status }}</span>
@@ -237,7 +237,7 @@
                     y: 0.95,
                     xref: 'paper',
                     yref: 'paper',
-                    text: '<span style="color: green;">&#9632;</span> High - 50cm to 25cm',
+                    text: '<span style="color: green;">&#9632;</span> High - 863cm to 432cm',
                     showarrow: false,
                     font: { size: 11 }
                 },
@@ -246,7 +246,7 @@
                     y: 0.85,
                     xref: 'paper',
                     yref: 'paper',
-                   text: '<span style="color: orange;">&#9632;</span> Moderate - 24cm to 13cm',
+                   text: '<span style="color: orange;">&#9632;</span> Moderate - 214cm to empty',
                     showarrow: false,
                     font: { size: 11 }
                 },
@@ -388,59 +388,64 @@
 
 
 
-     function fetchData(range) {
-            let url = `/get_percentage_data?range=${range}`;
-            if (range === "custom") {
-                const startDate = document.getElementById("start_date").value;
-                const endDate = document.getElementById("end_date").value;
-                if (!startDate || !endDate) {
-                    alert("Please select a valid date range.");
+   function fetchData(range) {
+        let url = `/get_percentage_data?range=${range}`;
+        if (range === "custom") {
+            const startDate = document.getElementById("start_date").value;
+            const endDate = document.getElementById("end_date").value;
+            if (!startDate || !endDate) {
+                alert("Please select a valid date range.");
+                return;
+            }
+            url += `&start_date=${startDate}&end_date=${endDate}`;
+        }
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (!data || data.length === 0) {
+                    alert("No data available for the selected range.");
                     return;
                 }
-                url += `&start_date=${startDate}&end_date=${endDate}`;
+                updateGraph(data);
+            })
+            .catch(error => console.error("Error fetching data:", error));
+    }
+
+    function updateGraph(data) {
+        data.sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
+
+        const indices = data.map((_, i) => (i + 1) * 0.5);
+        const remainingFuels = data.map(d => parseFloat(d.remainingFuel));
+        const datetimes = data.map(d => d.datetime);
+
+        const trace = {
+            x: indices,
+            y: remainingFuels,
+            type: "scatter",
+            mode: "lines+markers",
+            line: { shape: "spline", color: "blue", width: 2 },
+            fill: "tozeroy",
+            fillcolor: "rgba(0, 0, 255, 0.2)",
+            hovertemplate: "Remaining Fuel: %{y}cm<br>Datetime: %{text}<extra></extra>",
+            text: datetimes
+        };
+
+        const layout = {
+            title: "Remaining Fuel Over Time",
+            xaxis: { title: "Reading Index", tickmode: "array", tickvals: indices, ticktext: indices.map(x => x.toFixed(1)), automargin: true },
+            yaxis: {
+                title: "Fuel Level (cm)",
+                range: [0, 863],  // ✅ Set max Y-axis to 863
+                tickvals: [0, 200, 400, 600, 800, 863]  // ✅ Adjust tick marks
             }
+        };
 
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    if (!data || data.length === 0) {
-                        alert("No data available for the selected range.");
-                        return;
-                    }
-                    updateGraph(data);
-                })
-                .catch(error => console.error("Error fetching data:", error));
-        }
+        Plotly.newPlot("chart", [trace], layout, { responsive: true });
+    }
 
-        function updateGraph(data) {
-            data.sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
+    fetchData("today");
 
-            const indices = data.map((_, i) => (i + 1) * 0.5);
-            const remainingFuels = data.map(d => parseFloat(d.remainingFuel));
-            const datetimes = data.map(d => d.datetime);
-
-            const trace = {
-                x: indices,
-                y: remainingFuels,
-                type: "scatter",
-                mode: "lines+markers",
-                line: { shape: "spline", color: "blue", width: 2 },
-                fill: "tozeroy",
-                fillcolor: "rgba(0, 0, 255, 0.2)",
-                hovertemplate: "Remaining Fuel: %{y}cm<br>Datetime: %{text}<extra></extra>",
-                text: datetimes
-            };
-
-            const layout = {
-                title: "Remaining Fuel Over Time",
-                xaxis: { title: "Reading Index", tickmode: "array", tickvals: indices, ticktext: indices.map(x => x.toFixed(1)), automargin: true },
-                yaxis: { title: "Fuel Level (cm)", range: [0, 100], tickvals: [0, 20, 40, 60, 80, 100] }
-            };
-
-            Plotly.newPlot("chart", [trace], layout, { responsive: true });
-        }
-
-        fetchData("today");
         
 </script>
 {% endblock %}

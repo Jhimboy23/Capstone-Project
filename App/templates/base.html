@@ -8,7 +8,8 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://kit.fontawesome.com/e3ea81419c.js" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    
+     <link rel="stylesheet" href="{{ url_for('static', filename='./output.css') }}">
     <title>{% block title %}Home{% endblock %}</title>
     <style>
         .modal-title {
@@ -129,7 +130,7 @@
 
 <!-- Notification Modal -->
 <div id="notificationModal"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden opacity-0 transition-opacity duration-300 ease-in-out">
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-md hidden opacity-100 transition-opacity duration-300 ease-in-out">
 <div
     class="bg-white rounded-lg shadow-lg w-[300rem] max-w-lg transform scale-95 transition-transform duration-300 ease-in-out">
         <div class="p-4 border-b flex justify-between">
@@ -149,7 +150,7 @@
 
 <!-- Full-Screen Notification Modal -->
 <div id="fullScreenNotificationModal"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden opacity-0 transition-opacity duration-300 ease-in-out">
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 bg-opacity-50 hidden opacity-100 transition-opacity duration-300 ease-in-out">
     <div
         class="bg-white rounded-lg shadow-lg w-3/4 max-w-2xl transform scale-95 transition-transform duration-300 ease-in-out">
         <div class="p-4 border-b flex justify-between">
