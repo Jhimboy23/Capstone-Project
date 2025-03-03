@@ -245,12 +245,11 @@
         // Fetch data automatically on page load
         fetchData();
 
-        // Automatically fetch only when there's an update
-        function autoFetch() {
-            fetchData();
-            requestAnimationFrame(autoFetch); // Efficient continuous fetching
-        }
-        requestAnimationFrame(autoFetch);
+           // Refresh the page every 25 seconds
+      setInterval(function () {
+          location.reload();
+      }, 25000); // 25000ms = 25 seconds
+
     });
 
 
