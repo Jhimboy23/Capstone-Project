@@ -303,7 +303,7 @@
 
                     // Append new data point
                     const now = new Date();
-                    traceData.x.push(now.toISOString());
+                    traceData.x.push(now);  // Use Date object (Fix)
                     traceData.y.push(parseFloat(latestReading.remainingFuel));
 
                     // Keep only the last 10 seconds of data
@@ -318,10 +318,10 @@
                         y: [traceData.y]
                     });
 
-                    // Adjust x-axis range
-                    const pastTime = new Date(now.getTime() - 10000).toISOString();
+                    // Adjust x-axis range (Fix)
+                    const pastTime = new Date(now.getTime() - 10000);
                     Plotly.relayout('distance-graph', {
-                        'xaxis.range': [pastTime, now.toISOString()]
+                        'xaxis.range': [pastTime, now]
                     });
                 }
             })
