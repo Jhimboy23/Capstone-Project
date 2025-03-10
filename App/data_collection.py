@@ -41,10 +41,10 @@ if missing_columns:
 
 # Handle NaN values in X and y
 X = df[['timestamp', 'duration', 'hour', 'day_of_week', 'percentage']]
-y = df['fuel_consumed']
+y = df['percentage']
 
 # Drop rows where 'fuel_consumed' is NaN
-df = df.dropna(subset=['fuel_consumed'])
+df = df.dropna(subset=['percentage'])
 
 # Use an imputer to fill NaN values in X
 imputer = SimpleImputer(strategy="mean")
