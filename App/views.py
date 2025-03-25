@@ -52,18 +52,27 @@ def convert_status(status_str):
     else:
         return 0  # Default value for unknown statuses
 
+# Function to convert remainingFuel to a float
+def extract_float(value):
+    try:
+        if isinstance(value, list):  # If it's a list, extract the first element
+            value = value[0]
+        return float(str(value).strip('[]'))  # Convert to float after stripping brackets
+    except (ValueError, TypeError, IndexError):
+        return 0.0  # Default to 0.0 if conversion fails
+
 # Function to initialize the CSV file
 def initialize_csv():
     try:
         connection = get_db_connection()
         if connection:
             cursor = connection.cursor()
-            cursor.execute('SELECT distance, status, duration, fuel_consumed, percentage, datetime FROM public."data";')
+            cursor.execute('SELECT distance, status, duration, fuel_consumed, percentage, remainingFuel, datetime FROM public."data";')
             all_data = cursor.fetchall()
             cursor.close()
             connection.close()
 
-            # Convert status to integers
+            # Convert status and remainingFuel
             formatted_data = [
                 (
                     row[0],  # distance
@@ -71,14 +80,15 @@ def initialize_csv():
                     row[2],  # duration
                     row[3],  # fuel_consumed
                     row[4],  # percentage
-                    row[5]   # datetime
+                    extract_float(row[5]),  # Convert remainingFuel to float
+                    row[6]   # datetime
                 )
                 for row in all_data
             ]
 
             with open(CSV_FILE_PATH, mode="w", newline="") as file:
                 writer = csv.writer(file)
-                writer.writerow(["distance", "status", "duration", "fuel_consumed", "percentage", "datetime"])  # Header
+                writer.writerow(["distance", "status", "duration", "fuel_consumed", "percentage", "remainingFuel", "datetime"])  # Updated header
                 writer.writerows(formatted_data)
             print(f"CSV file '{CSV_FILE_PATH}' initialized with data from the database.")
     except Exception as e:
@@ -96,12 +106,12 @@ def refresh_csv():
                 current_row_count = cursor.fetchone()[0]
 
                 if current_row_count > last_row_count:  # New data detected
-                    cursor.execute('SELECT distance, status, duration, fuel_consumed, percentage, datetime FROM public."data";')
+                    cursor.execute('SELECT distance, status, duration, fuel_consumed, percentage, remainingFuel, datetime FROM public."data";')
                     all_data = cursor.fetchall()
                     cursor.close()
                     connection.close()
 
-                    # Convert status to integers
+                    # Convert status and remainingFuel
                     formatted_data = [
                         (
                             row[0],  # distance
@@ -109,14 +119,15 @@ def refresh_csv():
                             row[2],  # duration
                             row[3],  # fuel_consumed
                             row[4],  # percentage
-                            row[5]   # datetime
+                            extract_float(row[5]),  # Convert remainingFuel to float
+                            row[6]   # datetime
                         )
                         for row in all_data
                     ]
 
                     with open(CSV_FILE_PATH, mode="w", newline="") as file:
                         writer = csv.writer(file)
-                        writer.writerow(["distance", "status", "duration", "fuel_consumed", "percentage", "datetime"])  # Header
+                        writer.writerow(["distance", "status", "duration", "fuel_consumed", "percentage", "remainingFuel", "datetime"])  # Updated header
                         writer.writerows(formatted_data)
 
                     print(f"CSV file updated with {current_row_count - last_row_count} new rows.")
@@ -139,9 +150,22 @@ initialize_csv()
 
 # Function to append data to the CSV file
 def append_to_csv(data):
-    with open(CSV_FILE_PATH, mode="a", newline="") as file:
-        writer = csv.writer(file)
-        writer.writerow(data)
+    try:
+        formatted_data = [
+            data[0],  # distance
+            convert_status(data[1]),  # status as integer
+            data[2],  # duration
+            data[3],  # fuel_consumed
+            data[4],  # percentage
+            extract_float(data[5]),  # Convert remainingFuel to float
+            data[6]   # datetime
+        ]
+        with open(CSV_FILE_PATH, mode="a", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow(formatted_data)
+    except Exception as e:
+        print(f"Error while appending to CSV file: {e}")
+
         
 @views.route('/', methods=['GET'])
 @login_required
@@ -518,13 +542,11 @@ def download_pdf():
         # **Set timezone to Asia/Manila**
         cursor.execute("SET TIME ZONE 'Asia/Manila';")
 
-        # Fetch only today's data (adjusting for Manila timezone)
-        today_date = datetime.now().strftime("%Y-%m-%d")
+        # Fetch all data from the database
         cursor.execute("""
             SELECT remainingFuel, distance, liters, status, datetime, duration
-            FROM public."data"
-            WHERE datetime::text LIKE %s;
-        """, (today_date + "%",))
+            FROM public."data";
+        """)
         data_rows = cursor.fetchall()
 
         cursor.close()
@@ -632,7 +654,7 @@ def generate_forecast_data(days=30, csv_file_path=None):
         # Prepare features for forecasting
         current_datetime = latest_row['datetime'] + timedelta(days=1)
         current_duration = latest_row['duration']
-        current_percentage = latest_row['percentage']
+        current_remaining_fuel = latest_row['remainingFuel']
 
         # Initialize predictions list
         predictions = []
@@ -644,7 +666,7 @@ def generate_forecast_data(days=30, csv_file_path=None):
                 'duration': [current_duration],
                 'hour': [current_datetime.hour],
                 'day_of_week': [current_datetime.dayofweek],
-                'percentage': [current_percentage]
+                'remainingFuel': [current_remaining_fuel]
             })
 
             # Predict the next value
@@ -660,8 +682,8 @@ def generate_forecast_data(days=30, csv_file_path=None):
             # Update the current values for the next iteration
             current_datetime += timedelta(days=1)
             current_duration += 1
-            # Update the percentage dynamically (custom logic, if required)
-            current_percentage = max(0, min(100, current_percentage + 1))  # Example logic: Increment percentage, keep it between 0 and 100
+            # Update remainingFuel dynamically (custom logic, if required)
+            current_remaining_fuel = max(0, current_remaining_fuel - 1)  # Example: Decrease remainingFuel each day
 
         print("Forecast data generated successfully.")
         return predictions
@@ -680,11 +702,11 @@ def forecast():
 
         actual_data = pd.read_csv(CSV_FILE_PATH)
         actual_data['datetime'] = pd.to_datetime(actual_data['datetime'])
-        
+
         # Aggregate to daily averages
         actual_data['date'] = actual_data['datetime'].dt.date
-        daily_avg = actual_data.groupby('date').agg({'fuel_consumed': 'mean'}).reset_index()
-        daily_avg = daily_avg.rename(columns={'date': 'datetime', 'fuel_consumed': 'value'})
+        daily_avg = actual_data.groupby('date').agg({'remainingFuel': 'mean'}).reset_index()
+        daily_avg = daily_avg.rename(columns={'date': 'datetime', 'remainingFuel': 'value'})
         daily_avg['datetime'] = daily_avg['datetime'].astype(str)  # Convert back to string for JSON serialization
 
         # Generate forecast

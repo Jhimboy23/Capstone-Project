@@ -33,18 +33,18 @@ df['day_of_week'] = df['datetime'].dt.dayofweek
 df['duration'] = df['duration'] / 60
 
 # Ensure necessary columns exist
-required_columns = ['timestamp', 'duration', 'hour', 'day_of_week', 'percentage', 'fuel_consumed']
+required_columns = ['timestamp', 'duration', 'hour', 'day_of_week', 'remainingFuel']
 missing_columns = [col for col in required_columns if col not in df.columns]
 
 if missing_columns:
     raise ValueError(f"Missing columns in dataset: {missing_columns}")
 
 # Handle NaN values in X and y
-X = df[['timestamp', 'duration', 'hour', 'day_of_week', 'percentage']]
-y = df['percentage']
+X = df[['timestamp', 'duration', 'hour', 'day_of_week', 'remainingFuel']]
+y = df['remainingFuel']
 
-# Drop rows where 'fuel_consumed' is NaN
-df = df.dropna(subset=['percentage'])
+# Drop rows where 'remainingFuel' is NaN
+df = df.dropna(subset=['remainingFuel'])
 
 # Use an imputer to fill NaN values in X
 imputer = SimpleImputer(strategy="mean")
@@ -92,9 +92,9 @@ print(f"Gradient Boosting - MSE: {mse}, MAE: {mae}, R^2: {r2}")
 plt.figure(figsize=(8, 6))
 plt.scatter(y_test, y_pred, color='green', label='Predicted vs Actual')
 plt.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], color='red', linestyle='--', label='Perfect Prediction (y=x)')
-plt.xlabel('Actual Fuel Consumption')
-plt.ylabel('Predicted Fuel Consumption')
-plt.title('Actual vs Predicted Fuel Consumption (Gradient Boosting Regression)')
+plt.xlabel('Actual Remaining Fuel')
+plt.ylabel('Predicted Remaining Fuel')
+plt.title('Actual vs Predicted Remaining Fuel (Gradient Boosting Regression)')
 plt.legend()
 plt.grid(True)
 plt.show()

@@ -1,28 +1,27 @@
-
 <style>
     @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
 
-.page-transition {
-    animation: fadeInUp 0.5s ease-in-out;
-}
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 
+    .page-transition {
+        animation: fadeInUp 0.5s ease-in-out;
+    }
 </style>
 
 {% extends "base.html" %}
 {% block title %}Home{% endblock %}
 
 {% block content %}
- <!-- Sidebar content -->
-    <div class="flex h-auto">
+<!-- Sidebar content -->
+<div class="flex h-auto">
     {% set active_page = request.path %}
     <div id="sidebar" class="w-[75px] sm:w-56 bg-[#4C4B16] text-white h-screen transition-all duration-300 ease-in-out">
         <div class="p-5">
@@ -50,7 +49,7 @@
                     class="block py-2 px-1 text-center text-xl hover:bg-black transition-all {% if active_page == '/settings' %}bg-[#AB886D]{% endif %}">
                     <i class="fas fa-cogs"></i>
                 </a></li>
-    
+
             <!-- For larger screens, show both text and icons -->
             <li
                 class="hidden sm:flex items-center rounded transition-all hover:bg-[#AB886D] {% if active_page == '/' %}bg-[#AB886D]{% endif %}">
@@ -80,129 +79,141 @@
                     <span class="hidden sm:block">Settings</span>
                 </a>
             </li>
-    
-    <!-- Logout Button for Small Screens -->
-    <li class="block sm:hidden mt-10">
-        <a href="/logout"
-            class="block py-2 px-1 text-center text-xl bg-[#626F47] text-white border-2 border-red-500 rounded transition-all duration-300 ease-in-out hover:bg-red-600 hover:text-white">
-            <i class="fas fa-sign-out-alt"></i>
-        </a>
-    </li>
-    
-    <!-- Logout Button for Larger Screens -->
-    <li
-        class="hidden sm:flex items-center bg-[#626F47] text-white border-2 border-red-500 rounded-xl shadow-md hover:bg-red-600 hover:text-white hover:shadow-lg transition-all duration-300 ease-in-out">
-        <a href="/logout" class="flex items-center py-3 px-5 w-full font-semibold tracking-wide">
-            <i class="fas fa-sign-out-alt mr-4 text-lg"></i>
-            <span class="hidden sm:block">Logout</span>
-        </a>
-    </li>
+
+            <!-- Logout Button for Small Screens -->
+            <li class="block sm:hidden mt-10">
+                <a href="/logout"
+                    class="block py-2 px-1 text-center text-xl bg-[#626F47] text-white border-2 border-red-500 rounded transition-all duration-300 ease-in-out hover:bg-red-600 hover:text-white">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </li>
+
+            <!-- Logout Button for Larger Screens -->
+            <li
+                class="hidden sm:flex items-center bg-[#626F47] text-white border-2 border-red-500 rounded-xl shadow-md hover:bg-red-600 hover:text-white hover:shadow-lg transition-all duration-300 ease-in-out">
+                <a href="/logout" class="flex items-center py-3 px-5 w-full font-semibold tracking-wide">
+                    <i class="fas fa-sign-out-alt mr-4 text-lg"></i>
+                    <span class="hidden sm:block">Logout</span>
+                </a>
+            </li>
 
         </ul>
     </div>
 
 
-<!-- Main content -->
-<div id="main-content"
-    class="flex-1 p-3 md:p-4 lg:p-5 page-transition overflow-y-auto h-screen transition-all duration-500 ease-in-out">
-        <h2 class="text-xl md:text-2xl lg:text-3xl font-bold mb-6">Hi {{ user.first_name }}<span class="wave">👋</span></h2>
+    <!-- Main content -->
+    <div id="main-content"
+        class="flex-1 p-3 md:p-4 lg:p-5 page-transition overflow-y-auto h-screen transition-all duration-500 ease-in-out">
+        <h2 class="text-xl md:text-2xl lg:text-3xl font-bold mb-6">Hi {{ user.first_name }}<span class="wave">👋</span>
+        </h2>
 
-<!-- Responsive Cards Row -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3 lg:gap-4">
-    <!-- Today's Status Card -->
-    <div
-        class="bg-white rounded-lg lg:rounded-xl shadow-sm lg:shadow-md p-3 md:p-4 lg:p-5 text-center transition-transform transform hover:scale-105">
-        <h3 class="text-base md:text-lg lg:text-xl font-semibold text-gray-700 mb-1 md:mb-2 lg:mb-3">Today Status
-            Average</h3>
-        <p class="text-xl md:text-2xl lg:text-3xl font-bold text-[#4C4B16]">{{ averages.today if averages.today is not none else 'No Data' }}%</p>
-    </div>
+        <!-- Responsive Cards Row -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3 lg:gap-4">
+            <!-- Today's Status Card -->
+            <div
+                class="bg-white rounded-lg lg:rounded-xl shadow-sm lg:shadow-md p-3 md:p-4 lg:p-5 text-center transition-transform transform hover:scale-105">
+                <h3 class="text-base md:text-lg lg:text-xl font-semibold text-gray-700 mb-1 md:mb-2 lg:mb-3">Today
+                    Status
+                    Average</h3>
+                <p class="text-xl md:text-2xl lg:text-3xl font-bold text-[#4C4B16]">{{ averages.today if averages.today
+                    is not none else 'No Data' }}%</p>
+            </div>
 
-    <!-- Last Week's Status Card -->
-    <div
-        class="bg-white rounded-lg lg:rounded-xl shadow-sm lg:shadow-md p-3 md:p-4 lg:p-5 text-center transition-transform transform hover:scale-105">
-        <h3 class="text-base md:text-lg lg:text-xl font-semibold text-gray-700 mb-1 md:mb-2 lg:mb-3">Last Week
-            Status
-            Average</h3>
-        <p class="text-xl md:text-2xl lg:text-3xl font-bold text-[#4C4B16]">{{ averages.week if averages.week is not none else 'No Data' }}%</p>
-    </div>
+            <!-- Last Week's Status Card -->
+            <div
+                class="bg-white rounded-lg lg:rounded-xl shadow-sm lg:shadow-md p-3 md:p-4 lg:p-5 text-center transition-transform transform hover:scale-105">
+                <h3 class="text-base md:text-lg lg:text-xl font-semibold text-gray-700 mb-1 md:mb-2 lg:mb-3">Last Week
+                    Status
+                    Average</h3>
+                <p class="text-xl md:text-2xl lg:text-3xl font-bold text-[#4C4B16]">{{ averages.week if averages.week is
+                    not none else 'No Data' }}%</p>
+            </div>
 
-    <!-- Last Month's Status Card -->
-    <div
-        class="bg-white rounded-lg lg:rounded-xl shadow-sm lg:shadow-md p-3 md:p-4 lg:p-5 text-center transition-transform transform hover:scale-105">
-        <h3 class="text-base md:text-lg lg:text-xl font-semibold text-gray-700 mb-1 md:mb-2 lg:mb-3">Last Month
-            Status
-            Average</h3>
-        <p class="text-xl md:text-2xl lg:text-3xl font-bold text-[#4C4B16]">{{ averages.month if averages.month is not none else 'No Data' }}%</p>
-    </div>
-</div>
-
-<div class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4 mt-[25px]">
-    <!-- Fuel Supply Card -->
-    <div
-        class="bg-white rounded-lg lg:h-[13rem] lg:rounded-xl shadow-sm lg:shadow-md p-3 md:p-4 lg:p-5 transition-transform transform hover:scale-105">
-        <p class="text-xl md:text-2xl lg:text-2xl font-bold text-[#4C4B16] mb-2 text-left">
-            Remaining Fuel: <span id="remainingFuel">{{ remainingFuel }}</span>cm
-        </p>
-        <p class="text-sm md:text-base lg:text-lg text-gray-600 mb-1 text-left">Empty Space: <span id="distance"
-                class="font-medium text-black">{{ distance }}</span><span class="font-medium text-black">cm</span>
-        </p>
-        <p class="text-sm md:text-base lg:text-lg text-gray-600 mb-1 text-left">Liter Conversion: <span id="liters"
-                class="font-medium text-black">{{ liters }}</span> out of <span class="font-medium text-black">144460(L)</span>
-        </p>
-            <p class="text-sm md:text-base lg:text-lg text-gray-500 font-semibold text-left">
-                Status: <span id="status">{{ status }}</span>
-            </p>
-    <p class="text-sm md:text-base lg:text-lg font-semibold text-left" style="display: none;">
-        Percentage: <span id="percentage">{{ percentage }}</span>%
-    </p>
-
-    </div>
-
-
-    <!-- Sensor Data Graph -->
-    <div
-        class="bg-white rounded-lg lg:rounded-xl shadow-sm lg:shadow-md p-3 md:p-4 lg:p-5 hover:shadow-lg hover:bg-gray-50 lg:col-span-2">
-        <!-- Line Graph Placeholder -->
-        <div id="distance-graph" class="w-full h-48 md:h-60 lg:h-96 mb-2 transition-transform transform hover:scale-105">
-            <!-- The line graph will be rendered here -->
+            <!-- Last Month's Status Card -->
+            <div
+                class="bg-white rounded-lg lg:rounded-xl shadow-sm lg:shadow-md p-3 md:p-4 lg:p-5 text-center transition-transform transform hover:scale-105">
+                <h3 class="text-base md:text-lg lg:text-xl font-semibold text-gray-700 mb-1 md:mb-2 lg:mb-3">Last Month
+                    Status
+                    Average</h3>
+                <p class="text-xl md:text-2xl lg:text-3xl font-bold text-[#4C4B16]">{{ averages.month if averages.month
+                    is not none else 'No Data' }}%</p>
+            </div>
         </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4 mt-[25px]">
+            <!-- Fuel Supply Card -->
+            <div
+                class="bg-white rounded-lg lg:h-[13rem] lg:rounded-xl shadow-sm lg:shadow-md p-3 md:p-4 lg:p-5 transition-transform transform hover:scale-105">
+                <p class="text-xl md:text-2xl lg:text-2xl font-bold text-[#4C4B16] mb-2 text-left">
+                    Remaining Fuel: <span id="remainingFuel">{{ remainingFuel }}</span>cm
+                </p>
+                <p class="text-sm md:text-base lg:text-lg text-gray-600 mb-1 text-left">Empty Space: <span id="distance"
+                        class="font-medium text-black">{{ distance }}</span><span
+                        class="font-medium text-black">cm</span>
+                </p>
+                <p class="text-sm md:text-base lg:text-lg text-gray-600 mb-1 text-left">Liter Conversion: <span
+                        id="liters" class="font-medium text-black">{{ liters }}</span> out of <span
+                        class="font-medium text-black">144460(L)</span>
+                </p>
+                <p class="text-sm md:text-base lg:text-lg text-gray-500 font-semibold text-left">
+                    Status: <span id="status">{{ status }}</span>
+                </p>
+                <p class="text-sm md:text-base lg:text-lg font-semibold text-left" style="display: none;">
+                    Percentage: <span id="percentage">{{ percentage }}</span>%
+                </p>
+
+            </div>
+
+
+            <!-- Sensor Data Graph -->
+            <div
+                class="bg-white rounded-lg lg:rounded-xl shadow-sm lg:shadow-md p-3 md:p-4 lg:p-5 hover:shadow-lg hover:bg-gray-50 lg:col-span-2">
+                <!-- Line Graph Placeholder -->
+                <div id="distance-graph"
+                    class="w-full h-48 md:h-60 lg:h-96 mb-2 transition-transform transform hover:scale-105">
+                    <!-- The line graph will be rendered here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 ml-2 mt-4">
+            <button
+                class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 w-full md:w-auto transition-transform transform"
+                onclick="fetchData('today')">
+                Today
+            </button>
+            <button
+                class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-full md:w-auto transition-transform transform"
+                onclick="fetchData('week')">
+                Last 7 Days
+            </button>
+            <button
+                class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 w-full md:w-auto transition-transform transform"
+                onclick="fetchData('month')">
+                Last Month
+            </button>
+
+            <input type="date" id="start_date"
+                class="border border-gray-300 rounded-md px-3 py-2 w-full md:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <input type="date" id="end_date"
+                class="border border-gray-300 rounded-md px-3 py-2 w-full md:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button class="bg-cyan-500 text-white px-4 py-2 rounded-md hover:bg-cyan-600 w-full md:w-auto"
+                onclick="fetchData('custom')">
+                Custom Range
+            </button>
+        </div>
+
+        <div id="chart" class="mt-4 w-full h-[400px] transition-transform transform"></div>
+        <!-- Placeholder for Plotly graph -->
+
     </div>
-</div>
-      
-<div class="flex flex-wrap items-center gap-2 ml-2 mt-4">
-    <button class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 w-full md:w-auto transition-transform transform"
-        onclick="fetchData('today')">
-        Today
-    </button>
-    <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-full md:w-auto transition-transform transform"
-        onclick="fetchData('week')">
-        Last 7 Days
-    </button>
-    <button class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 w-full md:w-auto transition-transform transform"
-        onclick="fetchData('month')">
-        Last Month
-    </button>
-
-    <input type="date" id="start_date"
-        class="border border-gray-300 rounded-md px-3 py-2 w-full md:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500">
-    <input type="date" id="end_date"
-        class="border border-gray-300 rounded-md px-3 py-2 w-full md:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500">
-    <button class="bg-cyan-500 text-white px-4 py-2 rounded-md hover:bg-cyan-600 w-full md:w-auto"
-        onclick="fetchData('custom')">
-        Custom Range
-    </button>
-</div>
-
-<div id="chart" class="mt-4 w-full h-[400px] transition-transform transform"></div> <!-- Placeholder for Plotly graph -->
-
-</div>
 </div>
 
 <!-- Include Plotly.js -->
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
 <script>
-   let traceData = {
+    let traceData = {
         x: [],
         y: [],
         mode: 'lines',
@@ -216,51 +227,51 @@
         fillcolor: 'rgba(135, 206, 250, 0.3)'
     };
 
-     // Layout for the graph, including a closer dedicated space for the legend
-        var layout = {
-            grid: { rows: 1, columns: 2, pattern: 'independent' }, // Two columns
-            title: 'Fuel Level Monitoring',
-            xaxis: {
-                title: 'Time',
-                type: 'date',
-                tickformat: '%H:%M:%S',
-                domain: [0, 0.85] // Graph occupies 85% of width
+    // Layout for the graph, including a closer dedicated space for the legend
+    var layout = {
+        grid: { rows: 1, columns: 2, pattern: 'independent' }, // Two columns
+        title: 'Fuel Level Monitoring',
+        xaxis: {
+            title: 'Time',
+            type: 'date',
+            tickformat: '%H:%M:%S',
+            domain: [0, 0.85] // Graph occupies 85% of width
+        },
+        yaxis: {
+            title: 'Fuel Level (cm)',
+            range: [0, 836]
+        },
+        margin: { t: 50, b: 60, l: 50, r: 20 }, // Adjusted right margin
+        annotations: [
+            {
+                x: 0.99, // Position the legend closer to the graph
+                y: 0.95,
+                xref: 'paper',
+                yref: 'paper',
+                text: '<span style="color: green;">&#9632;</span> High - 863cm to 432cm',
+                showarrow: false,
+                font: { size: 11 }
             },
-            yaxis: {
-                title: 'Fuel Level (cm)',
-                range: [0, 836]
+            {
+                x: 0.99, // Align with the first annotation
+                y: 0.85,
+                xref: 'paper',
+                yref: 'paper',
+                text: '<span style="color: orange;">&#9632;</span> Moderate - 431cm to 215',
+                showarrow: false,
+                font: { size: 11 }
             },
-            margin: { t: 50, b: 60, l: 50, r: 20 }, // Adjusted right margin
-            annotations: [
-                {
-                    x: 0.99, // Position the legend closer to the graph
-                    y: 0.95,
-                    xref: 'paper',
-                    yref: 'paper',
-                    text: '<span style="color: green;">&#9632;</span> High - 863cm to 432cm',
-                    showarrow: false,
-                    font: { size: 11 }
-                },
-                {
-                    x: 0.99, // Align with the first annotation
-                    y: 0.85,
-                    xref: 'paper',
-                    yref: 'paper',
-                   text: '<span style="color: orange;">&#9632;</span> Moderate - 431cm to 215',
-                    showarrow: false,
-                    font: { size: 11 }
-                },
-                {
-                    x: 0.99, // Align with the other annotations
-                    y: 0.75,
-                    xref: 'paper',
-                    yref: 'paper',
-                     text: '<span style="color: red;">&#9632;</span> Low - 214cm to empty',
-                    showarrow: false,
-                    font: { size: 11 }
-                }
-            ]
-        };
+            {
+                x: 0.99, // Align with the other annotations
+                y: 0.75,
+                xref: 'paper',
+                yref: 'paper',
+                text: '<span style="color: red;">&#9632;</span> Low - 214cm to empty',
+                showarrow: false,
+                font: { size: 11 }
+            }
+        ]
+    };
 
     // Initialize graph
     Plotly.newPlot('distance-graph', [traceData], layout, { responsive: true });
@@ -334,7 +345,7 @@
     fetchLatestData();
 
 
-  // Function to set the color of the status based on its value
+    // Function to set the color of the status based on its value
     function setStatusColor(status) {
         let statusElement = document.getElementById("status");
 
@@ -384,10 +395,10 @@
     fetchLatestStatus();
 
     // Set an interval to update the status every 10 seconds
-    setInterval(fetchLatestStatus, 10000);  
+    setInterval(fetchLatestStatus, 10000);
 
 
-   function fetchData(range) {
+    function fetchData(range) {
         let url = `/get_percentage_data?range=${range}`;
         if (range === "custom") {
             const startDate = document.getElementById("start_date").value;
@@ -412,49 +423,49 @@
     }
 
     function updateGraph(data) {
-            data.sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
+        data.sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
 
-            const indices = data.map((_, i) => (i + 1) * 0.5);
-            const remainingFuels = data.map(d => parseFloat(d.remainingFuel));
+        const indices = data.map((_, i) => (i + 1) * 0.5);
+        const remainingFuels = data.map(d => parseFloat(d.remainingFuel));
 
-            // ✅ Convert datetime to correct format without timezone shift
-            const datetimes = data.map(d => {
-                const date = new Date(d.datetime + "Z");  // Force UTC interpretation
-                return date.toLocaleString("en-US", {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit",
-                    hour12: false
-                });
+        // ✅ Convert datetime to correct format without timezone shift
+        const datetimes = data.map(d => {
+            const date = new Date(d.datetime + "Z");  // Force UTC interpretation
+            return date.toLocaleString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: false
             });
+        });
 
-            const trace = {
-                x: indices,
-                y: remainingFuels,
-                type: "scatter",
-                mode: "lines+markers",
-                line: { shape: "spline", color: "blue", width: 2 },
-                fill: "tozeroy",
-                fillcolor: "rgba(0, 0, 255, 0.2)",
-                hovertemplate: "Remaining Fuel: %{y} cm<br>Datetime: %{text}<extra></extra>",
-                text: datetimes  // ✅ Uses corrected datetime
-            };
+        const trace = {
+            x: indices,
+            y: remainingFuels,
+            type: "scatter",
+            mode: "lines+markers",
+            line: { shape: "spline", color: "blue", width: 2 },
+            fill: "tozeroy",
+            fillcolor: "rgba(0, 0, 255, 0.2)",
+            hovertemplate: "Remaining Fuel: %{y} cm<br>Datetime: %{text}<extra></extra>",
+            text: datetimes  // ✅ Uses corrected datetime
+        };
 
-            const layout = {
-                title: "Remaining Fuel Over Time",
-                xaxis: { title: "Reading Index", tickmode: "array", tickvals: indices, ticktext: indices.map(x => x.toFixed(1)), automargin: true },
-                yaxis: {
-                    title: "Fuel Level (cm)",
-                    range: [0, 863],
-                    tickvals: [0, 200, 400, 600, 800, 863]
-                }
-            };
+        const layout = {
+            title: "Remaining Fuel Over Time",
+            xaxis: { title: "", showticklabels: false, tickmode: "array", tickvals: indices, ticktext: indices.map(x => x.toFixed(1)), automargin: true },
+            yaxis: {
+                title: "Fuel Level (cm)",
+                range: [0, 863],
+                tickvals: [0, 200, 400, 600, 800, 863]
+            }
+        };
 
-            Plotly.newPlot("chart", [trace], layout, { responsive: true });
-        }
+        Plotly.newPlot("chart", [trace], layout, { responsive: true });
+    }
 
     fetchData("today");
 
@@ -462,6 +473,6 @@
     setTimeout(function () {
         location.reload();
     }, 600000); // 600,000 ms = 10 minutes
-        
+
 </script>
 {% endblock %}
