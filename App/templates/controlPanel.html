@@ -162,12 +162,16 @@
     <div id="main-content"
         class="flex-1 p-6 page-transition transition-all duration-500 ease-in-out animate-fade-in-up overflow-auto">
             <!-- Sensor Data Table -->
-<div class="flex justify-end">
-    <a href="{{ url_for('views.download_pdf') }}"
-        class="inline-flex items-center px-6 py-3 text-white font-semibold mt-[8%] bg-[#4C4B16] hover:bg-[#AB886D] transition-all duration-300 ease-in-out rounded-lg shadow-md mb-3">
-        <i class="fas fa-download mr-2"></i> Generate PDF
-    </a>
-</div>
+            <div class="flex justify-end mt-10">
+                <form method="get" action="{{ url_for('views.download_pdf') }}" class="flex items-center">
+                    <input type="date" name="start_date" required class="border rounded px-3 py-2 mr-2 mb-1" />
+                    <input type="date" name="end_date" required class="border rounded px-3 py-2 mb-1" />
+                    <button type="submit"
+                        class="inline-flex items-center px-6 py-3 text-white font-semibold bg-[#4C4B16] hover:bg-[#AB886D] transition-all duration-300 ease-in-out rounded-lg shadow-md mb-2 ml-2">
+                        <i class="fas fa-download mr-2"></i> Generate PDF
+                    </button>
+                </form>        
+            </div>
 
 
     <div class="overflow-x-auto">
@@ -175,8 +179,8 @@
             class="min-w-full bg-white border border-gray-300 rounded-lg shadow-lg animate-fade-in">
             <thead class="bg-[#4C4B16] text-white">
                 <tr>
-                    <th class="px-4 py-3 text-left text-sm sm:text-base font-semibold">Remaining Fuel (cm)</th>
-                    <th class="px-4 py-3 text-left text-sm sm:text-base font-semibold">Empty Distance (cm)</th>
+                    <th class="px-4 py-3 text-left text-sm sm:text-base font-semibold">Remaining Fuel (m)</th>
+                    <th class="px-4 py-3 text-left text-sm sm:text-base font-semibold">Empty Distance (m)</th>
                     <th class="px-4 py-3 text-left text-sm sm:text-base font-semibold">Liters</th>
                     <th class="px-4 py-3 text-left text-sm sm:text-base font-semibold">Datetime</th>
                 </tr>
@@ -200,7 +204,7 @@
 </div>
 <script>
 
-  $(document).ready(function () {
+    $(document).ready(function () {
         let firstLoad = true; // Flag to check if it's the first page load
         let previousData = ""; // Store previous data for comparison
 
@@ -218,9 +222,13 @@
                             readingsTableBody.empty(); // Clear table before inserting new data
 
                             $.each(data.readings, function (index, reading) {
+                                // Convert remainingFuel and distance to float with 2 decimals by dividing by 100
+                                let remainingFuelFloat = (parseFloat(reading.remainingFuel) / 100).toFixed(2);
+                                let distanceFloat = (parseFloat(reading.distance) / 100).toFixed(2);
+
                                 let row = `<tr class="border-t border-gray-300 hover:bg-gray-100 transition ${firstLoad ? 'animate-fade-in delay-' + (index * 100) : ''}">
-                                <td class="px-4 py-3 text-center">${reading.remainingFuel}</td>
-                                <td class="px-4 py-3 text-center">${reading.distance}</td>
+                                <td class="px-4 py-3 text-center">${remainingFuelFloat}</td>
+                                <td class="px-4 py-3 text-center">${distanceFloat}</td>
                                 <td class="px-4 py-3 text-center">${reading.liters}</td>
                                 <td class="px-4 py-3 text-center">${reading.datetime}</td>
                             </tr>`;
@@ -245,11 +253,10 @@
         // Fetch data automatically on page load
         fetchData();
 
-           // Refresh the page every 25 seconds
-      setInterval(function () {
-          location.reload();
-      }, 25000); // 25000ms = 25 seconds
-
+        // Refresh the page every 45 seconds
+        setInterval(function () {
+            location.reload();
+        }, 45000); // 45000ms = 45 seconds
     });
 
 

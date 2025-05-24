@@ -14,6 +14,41 @@
     .page-transition {
         animation: fadeInUp 0.5s ease-in-out;
     }
+    @keyframes glow-red {
+  0%, 100% {
+    box-shadow: 0 0 5px #ef4444, 0 0 10px #ef4444;
+  }
+  50% {
+    box-shadow: 0 0 10px #f87171, 0 0 20px #f87171;
+  }
+}
+@keyframes glow-orange {
+  0%, 100% {
+    box-shadow: 0 0 5px #f97316, 0 0 10px #f97316;
+  }
+  50% {
+    box-shadow: 0 0 10px #fb923c, 0 0 20px #fb923c;
+  }
+}
+@keyframes glow-green {
+  0%, 100% {
+    box-shadow: 0 0 5px #22c55e, 0 0 10px #22c55e;
+  }
+  50% {
+    box-shadow: 0 0 10px #4ade80, 0 0 20px #4ade80;
+  }
+}
+
+.glow-red {
+  animation: glow-red 2s infinite ease-in-out;
+}
+.glow-orange {
+  animation: glow-orange 2s infinite ease-in-out;
+}
+.glow-green {
+  animation: glow-green 2s infinite ease-in-out;
+}
+
 </style>
 
 {% extends "base.html" %}
@@ -109,35 +144,33 @@
 
         <!-- Responsive Cards Row -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3 lg:gap-4">
-            <!-- Today's Status Card -->
-            <div
-                class="bg-white rounded-lg lg:rounded-xl shadow-sm lg:shadow-md p-3 md:p-4 lg:p-5 text-center transition-transform transform hover:scale-105">
-                <h3 class="text-base md:text-lg lg:text-xl font-semibold text-gray-700 mb-1 md:mb-2 lg:mb-3">Today
-                    Status
-                    Average</h3>
-                <p class="text-xl md:text-2xl lg:text-3xl font-bold text-[#4C4B16]">{{ averages.today if averages.today
-                    is not none else 'No Data' }}%</p>
-            </div>
+    <!-- Today Status Card -->
+    <div
+        class="rounded-lg shadow-md p-4 text-center text-white transform hover:scale-105 duration-300 {{ averages_styles.today }}">
+        <h3 class="text-lg font-semibold mb-2">Today Status Average</h3>
+        <p class="text-3xl font-bold">
+            {{ averages.today if averages.today != 'No Data' else 'No Data' }}%
+        </p>
+    </div>
 
-            <!-- Last Week's Status Card -->
-            <div
-                class="bg-white rounded-lg lg:rounded-xl shadow-sm lg:shadow-md p-3 md:p-4 lg:p-5 text-center transition-transform transform hover:scale-105">
-                <h3 class="text-base md:text-lg lg:text-xl font-semibold text-gray-700 mb-1 md:mb-2 lg:mb-3">Last Week
-                    Status
-                    Average</h3>
-                <p class="text-xl md:text-2xl lg:text-3xl font-bold text-[#4C4B16]">{{ averages.week if averages.week is
-                    not none else 'No Data' }}%</p>
-            </div>
+<!-- Week Status Card -->
+<div
+    class="rounded-lg lg:rounded-xl shadow-md p-3 md:p-4 lg:p-5 text-center transition-transform transform hover:scale-105 hover:brightness-110 duration-300 glow {{ averages_styles.week }}">
+    <h3 class="text-base md:text-lg lg:text-xl font-semibold text-white mb-1 md:mb-2 lg:mb-3">Last Week Status Average</h3>
+    <p class="text-xl md:text-2xl lg:text-3xl font-bold text-white">
+        {{ averages.week if averages.week != 'No Data' else 'No Data' }}%
+    </p>
+</div>
 
-            <!-- Last Month's Status Card -->
-            <div
-                class="bg-white rounded-lg lg:rounded-xl shadow-sm lg:shadow-md p-3 md:p-4 lg:p-5 text-center transition-transform transform hover:scale-105">
-                <h3 class="text-base md:text-lg lg:text-xl font-semibold text-gray-700 mb-1 md:mb-2 lg:mb-3">Last Month
-                    Status
-                    Average</h3>
-                <p class="text-xl md:text-2xl lg:text-3xl font-bold text-[#4C4B16]">{{ averages.month if averages.month
-                    is not none else 'No Data' }}%</p>
-            </div>
+
+        <!-- Month Status Card -->
+        <div
+            class="rounded-lg lg:rounded-xl shadow-md p-3 md:p-4 lg:p-5 text-center transition-transform transform hover:scale-105 hover:brightness-110 duration-300 glow {{ averages_styles.month }}">
+            <h3 class="text-base md:text-lg lg:text-xl font-semibold text-white mb-1 md:mb-2 lg:mb-3">Last Month Status Average</h3>
+            <p class="text-xl md:text-2xl lg:text-3xl font-bold text-white">
+                {{ averages.month if averages.month != 'No Data' else 'No Data' }}%
+            </p>
+        </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4 mt-[25px]">
@@ -145,12 +178,12 @@
             <div
                 class="bg-white rounded-lg lg:h-[13rem] lg:rounded-xl shadow-sm lg:shadow-md p-3 md:p-4 lg:p-5 transition-transform transform hover:scale-105">
                 <p class="text-xl md:text-2xl lg:text-2xl font-bold text-[#4C4B16] mb-2 text-left">
-                    Remaining Fuel: <span id="remainingFuel">{{ remainingFuel }}</span>cm
+                    Remaining Fuel: <span id="remainingFuel">{{ latest_remaining_fuel }}</span>m
                 </p>
-                <p class="text-sm md:text-base lg:text-lg text-gray-600 mb-1 text-left">Empty Space: <span id="distance"
-                        class="font-medium text-black">{{ distance }}</span><span
-                        class="font-medium text-black">cm</span>
+                <p class="text-sm md:text-base lg:text-lg text-gray-600 mb-1 text-left">
+                    Empty Space: <span id="distance" class="font-medium text-black">{{ latest_distance }}</span><span class="font-medium text-black">m</span>
                 </p>
+                
                 <p class="text-sm md:text-base lg:text-lg text-gray-600 mb-1 text-left">Liter Conversion: <span
                         id="liters" class="font-medium text-black">{{ liters }}</span> out of <span
                         class="font-medium text-black">144460(L)</span>
@@ -238,8 +271,10 @@
             domain: [0, 0.85] // Graph occupies 85% of width
         },
         yaxis: {
-            title: 'Fuel Level (cm)',
-            range: [0, 836]
+            title: 'Fuel Level (m)',
+            range: [0, 9],
+            tickvals: [0, 2, 4, 6, 8, 9],
+            ticktext: ['0', '2.00', '4.00', '6.00', '8.00', '9.00']
         },
         margin: { t: 50, b: 60, l: 50, r: 20 }, // Adjusted right margin
         annotations: [
@@ -248,7 +283,7 @@
                 y: 0.95,
                 xref: 'paper',
                 yref: 'paper',
-                text: '<span style="color: green;">&#9632;</span> High - 863cm to 432cm',
+                text: '<span style="color: green;">&#9632;</span> High - 8.63m to 4.32m',
                 showarrow: false,
                 font: { size: 11 }
             },
@@ -257,7 +292,7 @@
                 y: 0.85,
                 xref: 'paper',
                 yref: 'paper',
-                text: '<span style="color: orange;">&#9632;</span> Moderate - 431cm to 215',
+                text: '<span style="color: orange;">&#9632;</span> Moderate - 4.31m to 2.15m',
                 showarrow: false,
                 font: { size: 11 }
             },
@@ -266,7 +301,7 @@
                 y: 0.75,
                 xref: 'paper',
                 yref: 'paper',
-                text: '<span style="color: red;">&#9632;</span> Low - 214cm to empty',
+                text: '<span style="color: red;">&#9632;</span> Low - 2.14m to empty',
                 showarrow: false,
                 font: { size: 11 }
             }
@@ -285,64 +320,72 @@
 
     // Fetch latest data
     function fetchLatestData() {
-        fetch('/distance')
-            .then(response => response.json())
-            .then(data => {
-                console.log("Fetched Data:", data);  // Debugging log
+            fetch('/distance')
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Fetched Data:", data);  // Debugging log
 
-                if (data.readings && data.readings.length > 0) {
-                    const latestReading = data.readings[0];
+                    if (data.readings && data.readings.length > 0) {
+                        const latestReading = data.readings[0];
 
-                    // Ensure values exist before updating
-                    if (!latestReading.remainingFuel || !latestReading.liters) {
-                        console.error("Missing data in response:", latestReading);
-                        return;
+                        // Ensure values exist before updating
+                        if (
+                            latestReading.remainingFuel == null ||
+                            latestReading.liters == null ||
+                            latestReading.distance == null
+                        ) {
+                            console.error("Missing data in response:", latestReading);
+                            return;
+                        }
+
+                        // Convert to float with 2 decimal places
+                        const remainingFuelFloat = (parseFloat(latestReading.remainingFuel) / 100).toFixed(2);
+                        const distanceFloat = (parseFloat(latestReading.distance) / 100).toFixed(2);
+
+                        // Update displayed values
+                        document.getElementById('percentage').innerText = latestReading.percentage || 'N/A';
+                        document.getElementById('status').innerText = latestReading.status || 'N/A';
+                        document.getElementById('distance').innerText = distanceFloat || 'N/A';
+                        document.getElementById('liters').innerText = latestReading.liters || 'N/A';
+                        document.getElementById('remainingFuel').innerText = remainingFuelFloat || 'N/A';
+
+                        // Graph color based on status
+                        const color = latestReading.status === 'high' ? 'green' :
+                            latestReading.status === 'moderate' ? 'orange' : 'red';
+
+                        Plotly.restyle('distance-graph', { 'line.color': color }, [0]);
+
+                        // Append new data point to graph
+                        const now = new Date();
+                        traceData.x.push(now);
+                        traceData.y.push(parseFloat(remainingFuelFloat));
+
+                        // Keep only the last 10 data points
+                        if (traceData.x.length > 10) {
+                            traceData.x.shift();
+                            traceData.y.shift();
+                        }
+
+                        // Update graph
+                        Plotly.update('distance-graph', {
+                            x: [traceData.x],
+                            y: [traceData.y]
+                        });
+
+                        // Adjust x-axis range
+                        const pastTime = new Date(now.getTime() - 10000);
+                        Plotly.relayout('distance-graph', {
+                            'xaxis.range': [pastTime, now]
+                        });
                     }
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
 
-                    // Update displayed values
-                    document.getElementById('percentage').innerText = latestReading.percentage || 'N/A';
-                    document.getElementById('status').innerText = latestReading.status || 'N/A';
-                    document.getElementById('distance').innerText = latestReading.distance || 'N/A';
-                    document.getElementById('liters').innerText = latestReading.liters || 'N/A';
-                    document.getElementById('remainingFuel').innerText = latestReading.remainingFuel || 'N/A';
+        // Fetch data every 10 seconds
+        setInterval(fetchLatestData, 10000);
+        fetchLatestData();
 
-                    // Graph color based on status
-                    const color = latestReading.status === 'high' ? 'green' :
-                        latestReading.status === 'moderate' ? 'orange' : 'red';
-
-                    Plotly.restyle('distance-graph', { 'line.color': color }, [0]);
-
-                    // Append new data point
-                    const now = new Date();
-                    traceData.x.push(now);  // Use Date object (Fix)
-                    traceData.y.push(parseFloat(latestReading.remainingFuel));
-
-                    // Keep only the last 10 seconds of data
-                    if (traceData.x.length > 10) {
-                        traceData.x.shift();
-                        traceData.y.shift();
-                    }
-
-                    // Update graph
-                    Plotly.update('distance-graph', {
-                        x: [traceData.x],
-                        y: [traceData.y]
-                    });
-
-                    // Adjust x-axis range (Fix)
-                    const pastTime = new Date(now.getTime() - 10000);
-                    Plotly.relayout('distance-graph', {
-                        'xaxis.range': [pastTime, now]
-                    });
-                }
-            })
-            .catch(error => console.error('Error fetching data:', error));
-    }
-
-    // Fetch data every 5 seconds
-    setInterval(fetchLatestData, 10000);
-    // setInterval(fetchLatestData, 600000);  // Fetch data every 10 minutes
-    fetchLatestData();
 
 
     // Function to set the color of the status based on its value
@@ -379,7 +422,14 @@
                     statusElement.textContent = "No data";
                     statusElement.style.color = 'gray';
                 } else {
-                    remainingFuelElement.textContent = data.remainingFuel;
+                    // Convert remainingFuel to float and divide by 100, then format to 2 decimals
+                    let remainingFuelFloat = parseFloat(data.remainingFuel);
+                    if (!isNaN(remainingFuelFloat)) {
+                        remainingFuelElement.textContent = (remainingFuelFloat / 100).toFixed(2);
+                    } else {
+                        remainingFuelElement.textContent = data.remainingFuel;
+                    }
+
                     statusElement.textContent = data.status;
 
                     // Update the color based on the status
@@ -423,56 +473,67 @@
     }
 
     function updateGraph(data) {
-        data.sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
+            data.sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
 
-        const indices = data.map((_, i) => (i + 1) * 0.5);
-        const remainingFuels = data.map(d => parseFloat(d.remainingFuel));
+            const indices = data.map((_, i) => (i + 1) * 0.5);
 
-        // ✅ Convert datetime to correct format without timezone shift
-        const datetimes = data.map(d => {
-            const date = new Date(d.datetime + "Z");  // Force UTC interpretation
-            return date.toLocaleString("en-US", {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
-                hour12: false
+            // ✅ Convert remainingFuel from cm to meters with two decimal precision
+            const remainingFuels = data.map(d => (parseFloat(d.remainingFuel) / 100).toFixed(2));
+
+            // ✅ Format datetime without timezone shift
+            const datetimes = data.map(d => {
+                const date = new Date(d.datetime + "Z");  // Ensure UTC
+                return date.toLocaleString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                    hour12: false
+                });
             });
-        });
 
-        const trace = {
-            x: indices,
-            y: remainingFuels,
-            type: "scatter",
-            mode: "lines+markers",
-            line: { shape: "spline", color: "blue", width: 2 },
-            fill: "tozeroy",
-            fillcolor: "rgba(0, 0, 255, 0.2)",
-            hovertemplate: "Remaining Fuel: %{y} cm<br>Datetime: %{text}<extra></extra>",
-            text: datetimes  // ✅ Uses corrected datetime
-        };
+            const trace = {
+                x: indices,
+                y: remainingFuels,
+                type: "scatter",
+                mode: "lines+markers",
+                line: { shape: "spline", color: "blue", width: 2 },
+                fill: "tozeroy",
+                fillcolor: "rgba(0, 0, 255, 0.2)",
+                hovertemplate: "Remaining Fuel: %{y} m<br>Datetime: %{text}<extra></extra>",
+                text: datetimes
+            };
 
-        const layout = {
-            title: "Remaining Fuel Over Time",
-            xaxis: { title: "", showticklabels: false, tickmode: "array", tickvals: indices, ticktext: indices.map(x => x.toFixed(1)), automargin: true },
-            yaxis: {
-                title: "Fuel Level (cm)",
-                range: [0, 863],
-                tickvals: [0, 200, 400, 600, 800, 863]
-            }
-        };
+            const layout = {
+                title: "Remaining Fuel Over Time",
+                xaxis: {
+                    title: "",
+                    showticklabels: false,
+                    tickmode: "array",
+                    tickvals: indices,
+                    ticktext: indices.map(x => x.toFixed(1)),
+                    automargin: true
+                },
+                yaxis: {
+                    title: "Fuel Level (m)",
+                    range: [0, 9],
+                    tickvals: [0, 2, 4, 6, 8, 9],
+                    ticktext: ["0", "2.00", "4.00", "6.00", "8.00", "9.00"]
+                }
+            };
 
-        Plotly.newPlot("chart", [trace], layout, { responsive: true });
-    }
+            Plotly.newPlot("chart", [trace], layout, { responsive: true });
+        }
 
-    fetchData("today");
+        fetchData("today");
 
-    // Refresh the page every 10 minutes
-    setTimeout(function () {
-        location.reload();
-    }, 600000); // 600,000 ms = 10 minutes
+        // Refresh the page every 10 minutes
+        setTimeout(function () {
+            location.reload();
+        }, 600000); // 600,000 ms = 10 minutes
+
 
 </script>
 {% endblock %}
